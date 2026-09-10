@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Product — ElectroMart Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--acc:#6366f1;--bg:#f1f5f9;--card:#fff;--bdr:#e2e8f0;--txt:#0f172a;--sub:#64748b;--ok:#10b981;--err:#ef4444;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;}
+.wrap{width:100%;max-width:820px;}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.ph h1{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;}
+.ph h1 span{color:var(--acc);}
+.back{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:9px;background:var(--card);border:1px solid var(--bdr);color:var(--sub);text-decoration:none;font-size:.84rem;font-weight:600;transition:all .14s;}
+.back:hover{border-color:var(--acc);color:var(--acc);}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:28px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg.full{grid-column:1/-1;}
+label{font-size:.77rem;font-weight:700;color:var(--sub);}
+input,select{width:100%;padding:10px 13px;border:1.5px solid var(--bdr);border-radius:9px;font-size:.84rem;font-family:'DM Sans',sans-serif;outline:none;background:#f8fafc;transition:border-color .14s;}
+input:focus,select:focus{border-color:var(--acc);background:#fff;box-shadow:0 0 0 3px rgba(99,102,241,.1);}
+.hint{font-size:.7rem;color:var(--sub);margin-top:3px;}
+.divider{border:none;border-top:1px solid var(--bdr);margin:20px 0;grid-column:1/-1;}
+.acts{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:9px;font-size:.84rem;font-weight:600;border:none;cursor:pointer;transition:all .14s;text-decoration:none;}
+.btn-primary{background:var(--acc);color:#fff;}
+.btn-primary:hover{background:#4338ca;transform:translateY(-1px);}
+.btn-sec{background:var(--bg);color:var(--txt);border:1px solid var(--bdr);}
+.btn-sec:hover{background:var(--bdr);}
+.alert{padding:11px 15px;border-radius:9px;margin-bottom:14px;font-size:.84rem;font-weight:500;}
+.alert-error{background:#fef2f2;color:#991b1b;border-left:3px solid var(--err);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="ph">
+    <h1>Add <span>New Product</span></h1>
+    <a href="{% url 'dashboard' %}" class="back"><i class="fa-solid fa-arrow-left"></i> Dashboard</a>
+  </div>
+
+  {% if messages %}{% for msg in messages %}<div class="alert alert-error">{{ msg }}</div>{% endfor %}{% endif %}
+
+  <div class="card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="grid">
+
+        <div class="fg full">
+          <label>Product Name *</label>
+          <input type="text" name="Product_Name" placeholder="e.g. Samsung Galaxy S24 Ultra" required>
+        </div>
+
+        <div class="fg">
+          <label>Category *</label>
+          <select name="Category" required>
+            <option value="" disabled selected>Select Category</option>
+            <option>Mobiles</option><option>Laptops</option><option>Tablets</option>
+            <option>Audio</option><option>Cameras</option><option>Accessories</option>
+            <option>Smart Home</option><option>Wearables</option><option>Other</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>Brand *</label>
+          <input type="text" name="Brand" placeholder="e.g. Samsung, Apple, Sony" required>
+        </div>
+
+        <div class="fg">
+          <label>Model / Type</label>
+          <input type="text" name="Model_Type" placeholder="e.g. S24 Ultra, M2 Pro">
+        </div>
+
+        <div class="fg">
+          <label>Stock Quantity *</label>
+          <input type="number" name="Quantity" placeholder="0" min="0" required>
+        </div>
+
+        <hr class="divider">
+
+        <div class="fg">
+          <label>Unit Price (₹) *</label>
+          <input type="number" name="Unit_Price" id="unitPrice" placeholder="0.00" step="0.01" min="0" required oninput="calc()">
+        </div>
+
+        <div class="fg">
+          <label>GST %</label>
+          <input type="number" name="Gst_Percent" id="gstPct" placeholder="18" step="0.01" min="0" max="100" oninput="calc()">
+          <span class="hint">Leave blank for 0% GST</span>
+        </div>
+
+        <div class="fg">
+          <label>Total Price (auto)</label>
+          <input type="text" id="totalPrev" placeholder="₹ 0.00" readonly style="background:#f1f5f9;color:var(--acc);font-weight:700;cursor:default;">
+          <span class="hint">Unit Price + GST amount</span>
+        </div>
+
+        <div class="fg full">
+          <label>Product Image</label>
+          <input type="file" name="ProductImage" accept="image/*">
+        </div>
+
+      </div>
+      <div class="acts">
+        <a href="{% url 'dashboard' %}" class="btn btn-sec">Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+function calc(){
+  const p=parseFloat(document.getElementById('unitPrice').value)||0;
+  const g=parseFloat(document.getElementById('gstPct').value)||0;
+  const t=p+(p*g/100);
+  document.getElementById('totalPrev').value=t>0?'₹ '+t.toFixed(2):'';
+}
+</script>
+</body>
+</html>

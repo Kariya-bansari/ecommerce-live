@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Product — ElectroMart Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root { --accent:#6366f1; --bg:#f1f5f9; --card:#fff; --border:#e2e8f0; --text:#0f172a; --muted:#64748b; --success:#10b981; --danger:#ef4444; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:40px 20px; }
+.page-wrap { width:100%; max-width:860px; }
+.page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.page-header h1 { font-family:'Space Grotesk',sans-serif; font-size:1.6rem; font-weight:700; }
+.page-header h1 span { color:var(--accent); }
+.back-btn { display:inline-flex; align-items:center; gap:8px; padding:9px 18px; border-radius:10px; background:var(--card); border:1px solid var(--border); color:var(--muted); text-decoration:none; font-size:0.875rem; font-weight:600; transition:all 0.15s; }
+.back-btn:hover { border-color:var(--accent); color:var(--accent); }
+.card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:32px; }
+.form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group.full { grid-column:1/-1; }
+label { font-size:0.8rem; font-weight:700; color:var(--muted); letter-spacing:0.02em; }
+input, select { padding:11px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:0.875rem; font-family:'DM Sans',sans-serif; outline:none; background:#f8fafc; transition:border-color 0.15s,background 0.15s; }
+input:focus, select:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+.divider { border:none; border-top:1px solid var(--border); margin:24px 0; }
+.form-actions { display:flex; gap:12px; justify-content:flex-end; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding:11px 24px; border-radius:10px; font-size:0.875rem; font-weight:600; border:none; cursor:pointer; transition:all 0.15s; text-decoration:none; }
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:#4338ca; transform:translateY(-1px); box-shadow:0 4px 15px rgba(99,102,241,0.3); }
+.btn-secondary { background:var(--bg); color:var(--text); border:1px solid var(--border); }
+.btn-secondary:hover { background:var(--border); }
+.gst-hint { font-size:0.72rem; color:var(--muted); margin-top:4px; }
+.current-img-wrap { display:flex; align-items:center; gap:12px; padding:12px; background:#f8fafc; border-radius:10px; border:1px solid var(--border); }
+.current-img-wrap img { width:64px; height:64px; border-radius:8px; object-fit:cover; }
+.current-img-wrap span { font-size:0.8rem; color:var(--muted); }
+.alert { padding:12px 16px; border-radius:10px; margin-bottom:16px; font-size:0.875rem; font-weight:500; }
+.alert-error { background:#fef2f2; color:#991b1b; border-left:3px solid var(--danger); }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <h1>Edit <span>Product</span></h1>
+    <a href="{% url 'dashboard' %}" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-error">{{ msg }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Product Name *</label>
+          <input type="text" name="Product_Name" value="{{ product.Product_Name }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Category *</label>
+          <select name="Category" required>
+            <option value="" disabled>Select Category</option>
+            {% for cat in "Mobiles,Laptops,Tablets,Audio,Cameras,Accessories,Smart Home,Wearables,Other"|split:"," %}
+              <option {% if product.Category == cat %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Brand *</label>
+          <input type="text" name="Brand" value="{{ product.Brand }}" required>
+        </div>
+
+        <div class="form-group">
+          <label>Model / Type</label>
+          <input type="text" name="Model_Type" value="{{ product.Model_Type }}">
+        </div>
+
+        <div class="form-group">
+          <label>Stock Quantity *</label>
+          <input type="number" name="Quantity" value="{{ product.Quantity }}" min="0" required>
+        </div>
+
+        <hr class="divider" style="grid-column:1/-1;">
+
+        <div class="form-group">
+          <label>Unit Price (₹) *</label>
+          <input type="number" name="Unit_Price" id="unitPrice" value="{{ product.Unit_Price }}" step="0.01" min="0" required oninput="calcTotal()">
+        </div>
+
+        <div class="form-group">
+          <label>GST %</label>
+          <input type="number" name="Gst_Percent" id="gstPercent" value="{{ product.Gst_Percent }}" step="0.01" min="0" max="100" oninput="calcTotal()">
+          <span class="gst-hint">Total = Unit Price + (Unit Price × GST%)</span>
+        </div>
+
+        <div class="form-group">
+          <label>Total Price (auto-calculated)</label>
+          <input type="text" id="totalPreview" value="₹ {{ product.Total_Price }}" readonly style="background:#f1f5f9; color:var(--accent); font-weight:700;">
+        </div>
+
+        <div class="form-group full">
+          <label>Product Image (leave blank to keep current)</label>
+          {% if product.ProductImage %}
+            <div class="current-img-wrap" style="margin-bottom:10px;">
+              <img src="{{ product.ProductImage.url }}" alt="Current">
+              <span>Current image — upload new to replace</span>
+            </div>
+          {% endif %}
+          <input type="file" name="ProductImage" accept="image/*">
+        </div>
+
+      </div>
+
+      <hr class="divider">
+
+      <div class="form-actions">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function calcTotal() {
+  const price = parseFloat(document.getElementById('unitPrice').value) || 0;
+  const gst   = parseFloat(document.getElementById('gstPercent').value) || 0;
+  const total = price + (price * gst / 100);
+  document.getElementById('totalPreview').value = total > 0 ? '₹ ' + total.toFixed(2) : '';
+}
+</script>
+</body>
+</html>

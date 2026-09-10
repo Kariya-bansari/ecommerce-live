@@ -1,0 +1,42 @@
+pg_ctl -D "C:\PostgreSQL\data" -l logfile start
+
+Microsoft Windows [Version 10.0.22621.4317]
+(c) Microsoft Corporation. All rights reserved.
+
+cpg_ctl -D "C:\PostgreSQL\data" -l logfile start
+pg_ctl: another server might be running; trying to start server anyway
+waiting for server to start..... done
+server started
+
+C:\Users\admin1\Downloads\postgresql-16.11-2-windows-x64-binaries\pgsql\bin>
+
+
+
+
+
+
+cd C:\Users\admin1\Downloads\postgresql-16.11-2-windows-x64-binaries\pgsql\bin
+
+
+pg_ctl -D "C:\PostgreSQL\data" start
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

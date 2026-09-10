@@ -1,0 +1,270 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Dhara Enterprise</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg: #f8fafc;
+            --white: #ffffff;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text-dark); }
+
+        .header-nav {
+            position: fixed; top: 0; width: 100%; height: 75px;
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 5%; z-index: 1000; border-bottom: 1px solid var(--border);
+        }
+        .nav-logo-img { height: 45px; }
+
+        .main-wrapper { padding: 100px 5% 50px; max-width: 1200px; margin: 0 auto; }
+
+        .profile-header {
+            background: var(--white); border-radius: var(--radius-lg);
+            overflow: hidden; box-shadow: var(--shadow); margin-bottom: 30px;
+            position: relative;
+        }
+
+        .cover-photo {
+            height: 200px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #6366f1 100%);
+        }
+
+        .profile-info-bar {
+            padding: 0 40px 30px; display: flex; align-items: flex-end;
+            gap: 25px; margin-top: -60px; position: relative;
+        }
+
+        .profile-img-container {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 6px solid var(--white); background: var(--bg);
+            overflow: hidden; position: relative; box-shadow: var(--shadow);
+        }
+
+        .profile-img-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .cam-overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+            display: flex; align-items: center; justify-content: center;
+            color: white; opacity: 0; transition: var(--transition); cursor: pointer;
+        }
+        .profile-img-container:hover .cam-overlay { opacity: 1; }
+
+        .user-meta h1 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); }
+        .user-meta p { color: var(--text-light); font-weight: 500; }
+
+        .stats-container {
+            display: flex; gap: 40px; padding: 20px 40px;
+            border-top: 1px solid var(--border); background: #fafafa;
+        }
+        .stat-item { text-align: center; min-width: 80px; }
+        .stat-value { display: block; font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; }
+
+        .content-grid { display: grid; grid-template-columns: 300px 1fr; gap: 30px; }
+
+        .side-menu {
+            background: var(--white); padding: 20px;
+            border-radius: var(--radius-lg); box-shadow: var(--shadow);
+            height: fit-content;
+        }
+        .menu-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px; border-radius: var(--radius-md);
+            text-decoration: none; color: var(--text-dark);
+            font-weight: 600; transition: var(--transition); margin-bottom: 5px;
+        }
+        .menu-link.active { background: var(--primary); color: white; }
+        .menu-link:hover:not(.active) { background: var(--bg); transform: translateX(5px); }
+        .menu-link.logout { color: #ef4444; margin-top: 20px; border-top: 1px solid var(--border); }
+
+        .details-card {
+            background: var(--white); padding: 40px;
+            border-radius: var(--radius-lg); box-shadow: var(--shadow);
+        }
+        .details-card h2 { margin-bottom: 25px; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full { grid-column: span 2; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 700; color: var(--text-light); }
+
+        .input-wrap { position: relative; }
+        .input-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        .input-wrap input {
+            width: 100%; padding: 12px 15px 12px 45px;
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            background: var(--bg); font-weight: 500; outline: none; transition: var(--transition);
+        }
+        .input-wrap input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+
+        .btn-save {
+            background: var(--text-dark); color: white; border: none;
+            padding: 14px 30px; border-radius: var(--radius-md);
+            font-weight: 700; cursor: pointer; transition: var(--transition);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .btn-save:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px); z-index: 2000; align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: white; padding: 30px; border-radius: var(--radius-lg);
+            width: 95%; max-width: 500px; text-align: center;
+        }
+        .avatar-selection { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }
+        .avatar-selection img {
+            width: 100%; border-radius: 50%; cursor: pointer; padding: 5px;
+            border: 3px solid #f1f5f9; transition: var(--transition);
+            background: #f8fafc;
+        }
+        .avatar-selection img:hover { border-color: var(--primary); transform: scale(1.05); }
+
+        @media (max-width: 900px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="header-nav">
+    <a href="/"><img src="{% static 'logo.jpeg' %}" class="nav-logo-img"></a>
+    <div style="font-weight: 700; color: var(--primary);">
+        Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+    </div>
+</nav>
+
+<div class="main-wrapper">
+    <div class="profile-header">
+        <div class="cover-photo"></div>
+        <div class="profile-info-bar">
+            <div class="profile-img-container">
+                <img id="mainProfilePic" src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ user.username }}" alt="Profile">
+                <div class="cam-overlay" onclick="openModal()">
+                    <i class="fa-solid fa-camera fa-xl"></i>
+                </div>
+            </div>
+            <div class="user-meta">
+                <h1>
+                    {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user.username|default:"Guest User" }}{% endif %}
+                </h1>
+                <p><i class="fa-solid fa-location-dot"></i> Babra, Gujarat • <span style="color: #10b981;">Verified Member</span></p>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-item">
+                <span class="stat-value">{{ order_count|default:"0" }}</span>
+                <span class="stat-label">Orders</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ wishlist_count|default:"0" }}</span>
+                <span class="stat-label">Wishlist</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ review_count|default:"0" }}</span>
+                <span class="stat-label">Reviews</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <aside class="side-menu">
+            <a href="#" class="menu-link active"><i class="fa-solid fa-user-gear"></i> Profile Settings</a>
+            <a href="/cart/" class="menu-link"><i class="fa-solid fa-bag-shopping"></i> My Orders</a>
+            <a href="/wishlist/" class="menu-link"><i class="fa-solid fa-heart"></i> My Wishlist</a>
+            <a href="/contact/" class="menu-link"><i class="fa-solid fa-headset"></i> Help & Support</a>
+            <a href="{% url 'logout' %}" class="menu-link logout"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+        </aside>
+
+        <div class="details-card">
+            <h2><i class="fa-solid fa-circle-user" style="color: var(--primary);"></i> Personal Information</h2>
+
+            <form class="form-grid" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>First Name</label>
+                    <div class="input-wrap">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Your First Name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <div class="input-wrap">
+                        <i class="fa-regular fa-user"></i>
+                        <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Your Last Name">
+                    </div>
+                </div>
+
+                <div class="form-group full">
+                    <label>Email Address</label>
+                    <div class="input-wrap">
+                        <i class="fa-regular fa-envelope"></i>
+                        <input type="email" name="email" value="{{ user.email }}" placeholder="email@example.com">
+                    </div>
+                </div>
+
+                <div class="form-group full">
+                    <button type="submit" class="btn-save">
+                        <i class="fa-solid fa-floppy-disk"></i> Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="avatarModal" class="modal">
+    <div class="modal-content">
+        <h3>Select Your Avatar</h3>
+        <div class="avatar-selection">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" onclick="changePic(this.src)">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aria" onclick="changePic(this.src)">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jack" onclick="changePic(this.src)">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Milo" onclick="changePic(this.src)">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Luna" onclick="changePic(this.src)">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Leo" onclick="changePic(this.src)">
+        </div>
+        <button onclick="closeModal()" style="margin-top: 25px; border: none; background: #e2e8f0; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Close</button>
+    </div>
+</div>
+
+<script>
+    function openModal() { document.getElementById('avatarModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('avatarModal').style.display = 'none'; }
+    function changePic(src) {
+        document.getElementById('mainProfilePic').src = src;
+        localStorage.setItem('userAvatar', src);
+        closeModal();
+    }
+    window.onload = function() {
+        const savedAvatar = localStorage.getItem('userAvatar');
+        if (savedAvatar) { document.getElementById('mainProfilePic').src = savedAvatar; }
+    }
+</script>
+
+</body>
+</html>

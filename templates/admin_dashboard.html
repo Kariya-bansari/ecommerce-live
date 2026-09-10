@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dharaenterprise — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<style>
+:root{
+  --sb:#0d1117; --sb-w:255px; --acc:#6366f1; --acc2:#06b6d4;
+  --ok:#10b981; --warn:#f59e0b; --err:#ef4444;
+  --bg:#f1f5f9; --card:#fff; --bdr:#e2e8f0;
+  --txt:#0f172a; --sub:#64748b; --rad:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sb-w);height:100vh;background:var(--sb);
+  position:fixed;left:0;top:0;z-index:200;
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  padding:22px 18px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  margin-bottom:8px;
+}
+.brand-ico{
+  width:34px;height:34px;border-radius:9px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:.95rem;flex-shrink:0;
+}
+.brand-name{font-family:'Space Grotesk',sans-serif;color:#fff;font-size:1.05rem;font-weight:700;line-height:1.1;}
+.brand-sub{color:#475569;font-size:.62rem;}
+
+.nav-wrap{padding:4px 10px;flex:1;}
+.nav-sec-label{
+  font-size:.62rem;font-weight:700;letter-spacing:.1em;
+  color:#334155;text-transform:uppercase;
+  padding:10px 8px 4px;
+}
+.nav-item{margin-bottom:2px;}
+.nav-link{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 10px;color:#94a3b8;
+  text-decoration:none;border-radius:9px;
+  font-size:.845rem;font-weight:500;cursor:pointer;
+  transition:all .15s;
+}
+.nav-link:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.nav-link.active{background:rgba(99,102,241,.22);color:var(--acc);}
+.nav-link .lft{display:flex;align-items:center;gap:9px;}
+.nav-link .ico{width:18px;text-align:center;font-size:.85rem;}
+.chev{font-size:.6rem;transition:transform .2s;}
+.nav-item.open .chev{transform:rotate(90deg);}
+.submenu{display:none;padding:3px 0 3px 28px;}
+.nav-item.open .submenu{display:block;}
+.sub-a{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 10px;color:#64748b;
+  font-size:.8rem;border-radius:7px;cursor:pointer;
+  transition:all .13s;text-decoration:none;
+}
+.sub-a::before{content:'';width:4px;height:4px;background:currentColor;border-radius:50%;flex-shrink:0;}
+.sub-a:hover{color:#cbd5e1;background:rgba(255,255,255,0.05);}
+.sub-a.active{color:var(--acc);}
+
+.sb-footer{
+  padding:10px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.logout-a{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 10px;color:#ef4444;
+  text-decoration:none;border-radius:9px;
+  font-size:.845rem;font-weight:500;transition:all .15s;
+}
+.logout-a:hover{background:rgba(239,68,68,.12);}
+
+/* MAIN */
+.main{margin-left:var(--sb-w);padding:26px 34px;min-height:100vh;}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;}
+.page-h{font-family:'Space Grotesk',sans-serif;font-size:1.45rem;font-weight:700;}
+.page-h span{color:var(--acc);}
+.page-sub{font-size:.75rem;color:var(--sub);margin-bottom:2px;}
+.admin-pill{
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:1px solid var(--bdr);
+  padding:7px 15px;border-radius:40px;
+  font-size:.82rem;font-weight:600;
+}
+.green-dot{width:7px;height:7px;background:var(--ok);border-radius:50%;}
+
+/* VIEWS */
+.view{display:none;animation:fadeUp .22s ease;}
+.view.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+.stat-card{
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:var(--rad);padding:18px;
+  display:flex;align-items:center;gap:13px;
+  position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .15s;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.07);}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--c,var(--acc));
+}
+.stat-ico{
+  width:44px;height:44px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.stat-label{font-size:.72rem;color:var(--sub);font-weight:500;margin-bottom:3px;}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:1.45rem;font-weight:700;}
+
+/* CHARTS ROW */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad);padding:22px;margin-bottom:20px;}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;}
+.card-pill{font-size:.7rem;font-weight:600;padding:3px 9px;border-radius:20px;background:#eef2ff;color:var(--acc);}
+
+/* ALERTS */
+.alert{padding:11px 15px;border-radius:9px;margin-bottom:14px;font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:9px;}
+.alert-success{background:#ecfdf5;color:#065f46;border-left:3px solid var(--ok);}
+.alert-error{background:#fef2f2;color:#991b1b;border-left:3px solid var(--err);}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;}
+.b-ok{background:#dcfce7;color:#166534;}
+.b-err{background:#fee2e2;color:#991b1b;}
+.b-warn{background:#fef3c7;color:#92400e;}
+.b-info{background:#e0f2fe;color:#075985;}
+.b-purple{background:#ede9fe;color:#5b21b6;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table.dataTable{border-collapse:collapse;width:100%!important;font-size:.83rem;}
+table.dataTable thead th{
+  background:#f8fafc;color:var(--sub);
+  font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:11px 13px;border-bottom:2px solid var(--bdr);white-space:nowrap;
+}
+table.dataTable tbody td{padding:11px 13px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+table.dataTable tbody tr:last-child td{border-bottom:none;}
+table.dataTable tbody tr:hover td{background:#fafbff;}
+table.dataTable tbody tr.low-stock td{background:#fffbeb!important;}
+table.dataTable tbody tr.crit-stock td{background:#fff5f5!important;}
+.dataTables_wrapper .dataTables_filter input{border:1.5px solid var(--bdr);border-radius:8px;padding:6px 11px;font-family:'DM Sans',sans-serif;outline:none;}
+.dataTables_wrapper .dataTables_filter input:focus{border-color:var(--acc);}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current{background:var(--acc)!important;color:#fff!important;border-color:var(--acc)!important;border-radius:6px!important;}
+.dataTables_wrapper .dataTables_paginate .paginate_button{border-radius:6px!important;padding:4px 9px!important;}
+
+/* PRODUCT IMG */
+.pimg{width:40px;height:40px;border-radius:7px;object-fit:cover;border:1px solid var(--bdr);}
+.pimg-ph{width:40px;height:40px;border-radius:7px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:.9rem;}
+
+/* ACTION BTNS */
+.acts{display:flex;gap:5px;align-items:center;}
+.act{
+  width:30px;height:30px;border-radius:7px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.77rem;transition:all .13s;text-decoration:none;
+}
+.act-edit{background:#ede9fe;color:#6d28d9;}
+.act-edit:hover{background:#6d28d9;color:#fff;}
+.act-del{background:#fee2e2;color:#dc2626;}
+.act-del:hover{background:#dc2626;color:#fff;}
+
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:9px;font-size:.84rem;font-weight:600;border:none;cursor:pointer;transition:all .14s;text-decoration:none;}
+.btn-primary{background:var(--acc);color:#fff;}
+.btn-primary:hover{background:#4338ca;transform:translateY(-1px);}
+.btn-danger{background:var(--err);color:#fff;}
+.btn-danger:hover{background:#dc2626;}
+.btn-sec{background:var(--bg);color:var(--txt);border:1px solid var(--bdr);}
+.btn-sec:hover{background:var(--bdr);}
+.btn-sm{padding:6px 12px;font-size:.77rem;}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px;}
+.form-grid .full{grid-column:1/-1;}
+.fg label{display:block;font-size:.77rem;font-weight:700;color:var(--sub);margin-bottom:5px;}
+.fg input,.fg select{
+  width:100%;padding:10px 13px;
+  border:1.5px solid var(--bdr);border-radius:9px;
+  font-size:.84rem;font-family:'DM Sans',sans-serif;
+  outline:none;background:#f8fafc;transition:border-color .14s;
+}
+.fg input:focus,.fg select:focus{border-color:var(--acc);background:#fff;}
+.divider{border:none;border-top:1px solid var(--bdr);margin:20px 0;}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+
+/* DELETE MODAL */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.45);z-index:999;
+  align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex;}
+.modal-box{
+  background:#fff;border-radius:18px;padding:32px;
+  max-width:380px;width:90%;text-align:center;
+  box-shadow:0 25px 70px rgba(0,0,0,.18);
+}
+.modal-ico{font-size:2.4rem;color:var(--err);margin-bottom:12px;}
+.modal-t{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:7px;}
+.modal-s{color:var(--sub);font-size:.84rem;margin-bottom:22px;line-height:1.6;}
+.modal-acts{display:flex;gap:10px;justify-content:center;}
+
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;padding:16px;}.charts-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-ico"><i class="fa-solid fa-bolt"></i></div>
+    <div>
+      <div class="brand-name">dhara enterprise</div>
+      <div class="brand-sub">Admin Panel</div>
+    </div>
+  </div>
+
+  <div class="nav-wrap">
+    <div class="nav-sec-label">Overview</div>
+    <div class="nav-item">
+      <div class="nav-link active" onclick="showView('dashboard',this)">
+        <span class="lft"><i class="ico fa-solid fa-house"></i> Dashboard</span>
+      </div>
+    </div>
+
+    <div class="nav-sec-label" style="margin-top:10px;">Inventory</div>
+    <div class="nav-item" id="m-prod">
+      <div class="nav-link" onclick="toggleM('m-prod')">
+        <span class="lft"><i class="ico fa-solid fa-boxes-stacked"></i> Products</span>
+        <i class="fa-solid fa-chevron-right chev"></i>
+      </div>
+      <div class="submenu">
+        <span class="sub-a" onclick="showView('allProducts')">All Products</span>
+        <a class="sub-a" href="{% url 'add_product' %}">Add Product</a>
+        <span class="sub-a" onclick="showView('stockAlerts')">Stock Alerts</span>
+      </div>
+    </div>
+
+    <div class="nav-sec-label" style="margin-top:10px;">Commerce</div>
+    <div class="nav-item" id="m-orders">
+      <div class="nav-link" onclick="toggleM('m-orders')">
+        <span class="lft"><i class="ico fa-solid fa-receipt"></i> Orders</span>
+        <i class="fa-solid fa-chevron-right chev"></i>
+      </div>
+      <div class="submenu">
+        <span class="sub-a" onclick="showView('allOrders')">All Orders</span>
+        <span class="sub-a" onclick="showView('wishlist')">Wishlist</span>
+        <span class="sub-a" onclick="showView('cartItems')">Cart Items</span>
+        <span class="sub-a" onclick="showView('cancelled')">Cancelled</span>
+        <span class="sub-a" onclick="showView('payments')">Payments</span>
+      </div>
+    </div>
+
+    <div class="nav-item" id="m-cust">
+      <div class="nav-link" onclick="toggleM('m-cust')">
+        <span class="lft"><i class="ico fa-solid fa-users"></i> Customers</span>
+        <i class="fa-solid fa-chevron-right chev"></i>
+      </div>
+      <div class="submenu">
+        <span class="sub-a" onclick="showView('customers')">All Customers</span>
+        <span class="sub-a" onclick="showView('feedback')">Feedback</span>
+      </div>
+    </div>
+
+    <div class="nav-sec-label" style="margin-top:10px;">Other</div>
+    <div class="nav-item">
+      <div class="nav-link" onclick="showView('contact',this)">
+        <span class="lft"><i class="ico fa-solid fa-envelope"></i> Contact Us</span>
+      </div>
+    </div>
+    <div class="nav-item">
+      <div class="nav-link" onclick="showView('settings',this)">
+        <span class="lft"><i class="ico fa-solid fa-gear"></i> Settings</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-footer">
+    <a href="/logout/" class="logout-a"><i class="fa-solid fa-power-off"></i> Logout</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <p class="page-sub">dharaenterprise Admin</p>
+      <h1 class="page-h" id="pageTitle">Dashboard <span>Overview</span></h1>
+    </div>
+    <div class="admin-pill">
+      <div class="green-dot"></div>
+      <i class="fa-solid fa-circle-user" style="color:var(--acc)"></i>
+      Admin Account
+    </div>
+  </div>
+
+  <!-- Django Messages -->
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert {% if 'success' in msg.tags %}alert-success{% else %}alert-error{% endif %}">
+        <i class="fa-solid {% if 'success' in msg.tags %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- ═══ VIEW: DASHBOARD ═══ -->
+  <section id="view-dashboard" class="view active">
+    <div class="stats-grid">
+      <div class="stat-card" style="--c:#6366f1">
+        <div class="stat-ico" style="background:#eef2ff;color:#6366f1"><i class="fa-solid fa-wallet"></i></div>
+        <div><div class="stat-label">Total Revenue</div><div class="stat-val">₹{{ total_revenue|floatformat:0 }}</div></div>
+      </div>
+      <div class="stat-card" style="--c:#10b981">
+        <div class="stat-ico" style="background:#ecfdf5;color:#10b981"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <div><div class="stat-label">Total Products</div><div class="stat-val">{{ total_products }}</div></div>
+      </div>
+      <div class="stat-card" style="--c:#f59e0b">
+        <div class="stat-ico" style="background:#fff7ed;color:#f59e0b"><i class="fa-solid fa-cubes"></i></div>
+        <div><div class="stat-label">Total Stock</div><div class="stat-val">{{ total_stock }}</div></div>
+      </div>
+      <div class="stat-card" style="--c:#ef4444">
+        <div class="stat-ico" style="background:#fef2f2;color:#ef4444"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div><div class="stat-label">Low Stock Alerts</div><div class="stat-val">{{ low_stock_count }}</div></div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Top Products by Price</span><span class="card-pill">Monthly</span></div>
+        <canvas id="salesChart" height="115"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-hd"><span class="card-title">Category Share</span></div>
+        <canvas id="pieChart" height="175"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">All Products</span>
+        <a href="{% url 'add_product' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Product</a>
+      </div>
+      <div class="tbl-wrap">
+        <table id="dashTable" class="dataTable" style="width:100%">
+          <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Brand</th><th>Stock</th><th>Unit Price</th><th>GST%</th><th>Total Price</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for p in products %}
+            <tr class="{% if p.Quantity <= 2 %}crit-stock{% elif p.Quantity <= 5 %}low-stock{% endif %}">
+              <td>{{ p.id }}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:9px;">
+                  {% if p.ProductImage %}<img src="{{ p.ProductImage.url }}" class="pimg">
+                  {% else %}<div class="pimg-ph"><i class="fa-solid fa-image"></i></div>{% endif %}
+                  <div>
+                    <div style="font-weight:600;font-size:.84rem;">{{ p.Product_Name }}</div>
+                    <div style="font-size:.72rem;color:var(--sub);">{{ p.Model_Type }}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge b-purple">{{ p.Category }}</span></td>
+              <td>{{ p.Brand }}</td>
+              <td>
+                {% if p.Quantity <= 2 %}<span class="badge b-err">{{ p.Quantity }} ⚠</span>
+                {% elif p.Quantity <= 5 %}<span class="badge b-warn">{{ p.Quantity }}</span>
+                {% else %}<span class="badge b-ok">{{ p.Quantity }}</span>{% endif %}
+              </td>
+              <td>₹{{ p.Unit_Price }}</td>
+              <td>{{ p.Gst_Percent }}%</td>
+              <td><strong>₹{{ p.Total_Price }}</strong></td>
+              <td>
+                <div class="acts">
+                  <a href="{% url 'edit_product' p.id %}" class="act act-edit" title="Edit"><i class="fa-solid fa-pen"></i></a>
+                  <button class="act act-del" onclick="openDel({{ p.id }},'{{ p.Product_Name|escapejs }}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9" style="text-align:center;padding:30px;color:var(--sub);">No products found. <a href="{% url 'add_product' %}">Add one now</a></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: ALL PRODUCTS ═══ -->
+  <section id="view-allProducts" class="view">
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">Inventory Database</span>
+        <a href="{% url 'add_product' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Product</a>
+      </div>
+      <div class="tbl-wrap">
+        <table id="prodTable" class="dataTable" style="width:100%">
+          <thead><tr><th>#</th><th>Product</th><th>Category</th><th>Brand</th><th>Model</th><th>Stock</th><th>Unit Price</th><th>GST%</th><th>Total Price</th><th>Image</th><th>Actions</th></tr></thead>
+          <tbody>
+            {% for p in products %}
+            <tr class="{% if p.Quantity <= 2 %}crit-stock{% elif p.Quantity <= 5 %}low-stock{% endif %}">
+              <td>{{ p.id }}</td>
+              <td><strong>{{ p.Product_Name }}</strong></td>
+              <td><span class="badge b-purple">{{ p.Category }}</span></td>
+              <td>{{ p.Brand }}</td>
+              <td>{{ p.Model_Type }}</td>
+              <td>
+                {% if p.Quantity <= 2 %}<span class="badge b-err">{{ p.Quantity }}</span>
+                {% elif p.Quantity <= 5 %}<span class="badge b-warn">{{ p.Quantity }}</span>
+                {% else %}<span class="badge b-ok">{{ p.Quantity }}</span>{% endif %}
+              </td>
+              <td>₹{{ p.Unit_Price }}</td>
+              <td>{{ p.Gst_Percent }}%</td>
+              <td><strong>₹{{ p.Total_Price }}</strong></td>
+              <td>
+                {% if p.ProductImage %}<img src="{{ p.ProductImage.url }}" class="pimg">
+                {% else %}<div class="pimg-ph"><i class="fa-solid fa-image"></i></div>{% endif %}
+              </td>
+              <td>
+                <div class="acts">
+                  <a href="{% url 'edit_product' p.id %}" class="act act-edit" title="Edit"><i class="fa-solid fa-pen"></i></a>
+                  <button class="act act-del" onclick="openDel({{ p.id }},'{{ p.Product_Name|escapejs }}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="11" style="text-align:center;padding:30px;color:var(--sub);">No products yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: STOCK ALERTS ═══ -->
+  <section id="view-stockAlerts" class="view">
+    <div class="card">
+      <div class="card-hd">
+        <span class="card-title">⚠ Low Stock Alerts</span>
+        <span class="badge b-err">{{ low_stock_count }} items</span>
+      </div>
+      <div class="tbl-wrap">
+        <table id="stockTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Product</th><th>Category</th><th>Brand</th><th>Stock</th><th>Unit Price</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for p in low_stock %}
+            <tr class="{% if p.Quantity <= 2 %}crit-stock{% else %}low-stock{% endif %}">
+              <td><strong>{{ p.Product_Name }}</strong></td>
+              <td>{{ p.Category }}</td>
+              <td>{{ p.Brand }}</td>
+              <td style="font-weight:700;">{{ p.Quantity }}</td>
+              <td>₹{{ p.Unit_Price }}</td>
+              <td>
+                {% if p.Quantity <= 2 %}<span class="badge b-err">🔴 Critical</span>
+                {% else %}<span class="badge b-warn">🟡 Low Stock</span>{% endif %}
+              </td>
+              <td><a href="{% url 'edit_product' p.id %}" class="btn btn-primary btn-sm">Restock</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" style="text-align:center;padding:30px;color:var(--ok);"><i class="fa-solid fa-circle-check"></i> All products are well stocked!</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: ALL ORDERS ═══ -->
+  <section id="view-allOrders" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Global Order Registry</span></div>
+      <div class="tbl-wrap">
+        <table id="ordersTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Email</th><th>Product</th><th>Qty</th><th>Payment</th><th>Date</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>#ORD-001</td><td>Rahul Sharma</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef9d8e879a83af8b8a8280c18c8082">[email&#160;protected]</a></td><td>MacBook Air M2</td><td>1</td><td>UPI</td><td>2024-05-12</td><td><span class="badge b-ok">Delivered</span></td></tr>
+            <tr><td>#ORD-002</td><td>Priya Patel</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eeeecf7e7ffdefafbf3f1b0fdf1f3">[email&#160;protected]</a></td><td>iPhone 15 Pro</td><td>2</td><td>Card</td><td>2024-05-14</td><td><span class="badge b-info">Processing</span></td></tr>
+            <tr><td>#ORD-003</td><td>Amit Kumar</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e485898d90a48081898bca878b89">[email&#160;protected]</a></td><td>Sony Headphones</td><td>3</td><td>COD</td><td>2024-05-15</td><td><span class="badge b-warn">Pending</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: WISHLIST ═══ -->
+  <section id="view-wishlist" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Customer Wishlists</span></div>
+      <div class="tbl-wrap">
+        <table id="wishTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Product</th><th>User</th><th>Price</th><th>Availability</th></tr></thead>
+          <tbody>
+            <tr><td>iPhone 15 Pro</td><td>Anita Rao</td><td>₹1,24,000</td><td><span class="badge b-ok">In Stock</span></td></tr>
+            <tr><td>Sony WH-1000XM5</td><td>Vikram S</td><td>₹32,000</td><td><span class="badge b-err">Out of Stock</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: CART ITEMS ═══ -->
+  <section id="view-cartItems" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Active Carts</span></div>
+      <div class="tbl-wrap">
+        <table id="cartTable" class="dataTable" style="width:100%">
+          <thead><tr><th>User</th><th>Items</th><th>Cart Value</th><th>Last Active</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Vikram Singh</td><td>3 Items</td><td>₹12,500</td><td>2 hours ago</td><td><span class="badge b-warn">Abandoned</span></td></tr>
+            <tr><td>Meera Das</td><td>1 Item</td><td>₹4,200</td><td>45 min ago</td><td><span class="badge b-info">Active</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: CANCELLED ═══ -->
+  <section id="view-cancelled" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Cancelled Orders</span></div>
+      <div class="tbl-wrap">
+        <table id="cancelTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Reason</th><th>Refund</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td>#ORD-4402</td><td>Neha Kapoor</td><td>Wrong size</td><td><span class="badge b-ok">Completed</span></td><td>2024-05-10</td></tr>
+            <tr><td>#ORD-4388</td><td>Rohit Verma</td><td>Better price elsewhere</td><td><span class="badge b-warn">Processing</span></td><td>2024-05-09</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: PAYMENTS ═══ -->
+  <section id="view-payments" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Transaction History</span></div>
+      <div class="tbl-wrap">
+        <table id="payTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Txn ID</th><th>Customer</th><th>Method</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td>TXN_99012</td><td>Rahul S.</td><td><span class="badge b-purple">UPI</span></td><td>₹5,400</td><td><span class="badge b-ok">Success</span></td><td>2024-05-12</td></tr>
+            <tr><td>TXN_99011</td><td>Priya P.</td><td><span class="badge b-info">Card</span></td><td>₹32,000</td><td><span class="badge b-ok">Success</span></td><td>2024-05-11</td></tr>
+            <tr><td>TXN_99010</td><td>Amit K.</td><td><span class="badge b-warn">COD</span></td><td>₹1,200</td><td><span class="badge b-warn">Pending</span></td><td>2024-05-10</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: CUSTOMERS ═══ -->
+  <section id="view-customers" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Customer Database</span></div>
+      <div class="tbl-wrap">
+        <table id="custTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Name</th><th>Email</th><th>Total Spent</th><th>Orders</th><th>Joined</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Amit Kumar</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46272b2f3206212b272f2a6825292b">[email&#160;protected]</a></td><td>₹88,000</td><td>5</td><td>2023-12-10</td><td><span class="badge b-ok">Active</span></td></tr>
+            <tr><td>Priya Patel</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85f5f7ecfce4c5e2e8e4ece9abe6eae8">[email&#160;protected]</a></td><td>₹45,000</td><td>3</td><td>2024-01-05</td><td><span class="badge b-ok">Active</span></td></tr>
+            <tr><td>Rahul Singh</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f6d7e776a735f78727e7673317c7072">[email&#160;protected]</a></td><td>₹12,000</td><td>1</td><td>2024-03-20</td><td><span class="badge b-warn">Inactive</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: FEEDBACK ═══ -->
+  <section id="view-feedback" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Customer Feedback</span></div>
+      <div class="tbl-wrap">
+        <table id="fbTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Customer</th><th>Product</th><th>Rating</th><th>Comment</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Suresh Raina</td><td>Laptop Stand</td><td>⭐⭐⭐⭐⭐</td><td>Excellent quality!</td><td><span class="badge b-ok">Approved</span></td></tr>
+            <tr><td>Meera Das</td><td>USB Cable</td><td>⭐⭐</td><td>Stopped working after 2 days.</td><td><span class="badge b-warn">Pending</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: CONTACT ═══ -->
+  <section id="view-contact" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Inbound Inquiries</span></div>
+      <div class="tbl-wrap">
+        <table id="conTable" class="dataTable" style="width:100%">
+          <thead><tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Date</th></tr></thead>
+          <tbody>
+            <tr><td>Rajesh Khanna</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1567747f557170787a3b767a78">[email&#160;protected]</a></td><td>Bulk Order</td><td>I want to order 50 laptops.</td><td>2024-05-14</td></tr>
+            <tr><td>Neha Kapoor</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9af4fff2fbdaedfff8b4f9f5f7">[email&#160;protected]</a></td><td>Payment Issue</td><td>Payment deducted but order failed.</td><td>2024-05-13</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VIEW: SETTINGS ═══ -->
+  <section id="view-settings" class="view">
+    <div class="card">
+      <div class="card-hd"><span class="card-title">Account Settings</span></div>
+      <div class="form-grid">
+        <div class="fg"><label>Admin Name</label><input value="Super Admin"></div>
+        <div class="fg"><label>Email Address</label><input value="admin@electromart.com"></div>
+        <div class="fg"><label>Currency</label><select><option>INR (₹)</option><option>USD ($)</option></select></div>
+        <div class="fg"><label>Timezone</label><select><option>Asia/Kolkata (IST)</option><option>UTC</option></select></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary"><i class="fa-solid fa-check"></i> Update Profile</button></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- DELETE MODAL -->
+<div class="modal-bg" id="delModal">
+  <div class="modal-box">
+    <div class="modal-ico"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div class="modal-t">Delete Product?</div>
+    <div class="modal-s" id="delMsg">This action cannot be undone.</div>
+    <div class="modal-acts">
+      <button class="btn btn-sec" onclick="closeDel()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+      <form id="delForm" method="POST" style="display:inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// ── VIEW TITLES ──────────────────────────────────────────
+const TITLES={
+  dashboard:['Dashboard','Overview'],allProducts:['Products','Inventory'],
+  stockAlerts:['Stock','Alerts'],allOrders:['Orders','Registry'],
+  wishlist:['Customer','Wishlist'],cartItems:['Cart','Items'],
+  cancelled:['Cancelled','Orders'],payments:['Payment','Transactions'],
+  customers:['Customer','Database'],feedback:['Customer','Feedback'],
+  contact:['Contact','Inquiries'],settings:['Account','Settings'],
+};
+
+// ── DT INSTANCES ─────────────────────────────────────────
+const DT={};
+const tableIds={
+  dashboard:'dashTable',allProducts:'prodTable',stockAlerts:'stockTable',
+  allOrders:'ordersTable',wishlist:'wishTable',cartItems:'cartTable',
+  cancelled:'cancelTable',payments:'payTable',customers:'custTable',
+  feedback:'fbTable',contact:'conTable',
+};
+
+function showView(name, el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const sec=document.getElementById('view-'+name);
+  if(sec) sec.classList.add('active');
+
+  const [t1,t2]=TITLES[name]||['Admin','Panel'];
+  document.getElementById('pageTitle').innerHTML=`${t1} <span>${t2}</span>`;
+
+  // mark active nav
+  document.querySelectorAll('.nav-link,.sub-a').forEach(l=>l.classList.remove('active'));
+  if(el) el.classList.add('active');
+
+  // init DataTable once
+  if(tableIds[name] && !DT[name]){
+    DT[name]=$('#'+tableIds[name]).DataTable({responsive:true,pageLength:10});
+  }
+}
+
+function toggleM(id){
+  const item=document.getElementById(id);
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.nav-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+// ── DELETE MODAL ─────────────────────────────────────────
+function openDel(id, name){
+  document.getElementById('delMsg').textContent=`Delete "${name}"? This cannot be undone.`;
+  document.getElementById('delForm').action='/delete/'+id+'/';
+  document.getElementById('delModal').classList.add('open');
+}
+function closeDel(){
+  document.getElementById('delModal').classList.remove('open');
+}
+document.getElementById('delModal').addEventListener('click',function(e){if(e.target===this)closeDel();});
+
+// ── INIT ─────────────────────────────────────────────────
+$(document).ready(function(){
+  // Dashboard table
+  DT['dashboard']=$('#dashTable').DataTable({pageLength:10,order:[[4,'asc']]});
+
+    // ── BAR CHART: Top Products by Total Price (DYNAMIC) ──
+  const barLabels = {{ bar_labels|safe }};
+  const barPrices = {{ bar_prices|safe }};
+  const barColors = [
+    'rgba(99,102,241,0.85)','rgba(6,182,212,0.85)','rgba(16,185,129,0.85)',
+    'rgba(245,158,11,0.85)','rgba(239,68,68,0.85)','rgba(168,85,247,0.85)',
+    'rgba(236,72,153,0.85)','rgba(20,184,166,0.85)'
+  ];
+  new Chart(document.getElementById('salesChart'),{
+    type:'bar',
+    data:{
+      labels: barLabels,
+      datasets:[{
+        label:'Total Price (\u20b9)',
+        data: barPrices,
+        backgroundColor: barColors.slice(0, barLabels.length),
+        borderRadius:7,
+        borderSkipped:false
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{
+          grid:{color:'#f1f5f9'},
+          ticks:{font:{family:'DM Sans'},callback:v=>'\u20b9'+v.toLocaleString()}
+        },
+        x:{
+          grid:{display:false},
+          ticks:{font:{family:'DM Sans'},maxRotation:35,minRotation:20}
+        }
+      }
+    }
+  });
+
+  // ── DONUT CHART: Category Share (DYNAMIC) ──────────────
+  const catLabels = {{ cat_labels|safe }};
+  const catCounts = {{ cat_counts|safe }};
+  const pieColors = [
+    '#6366f1','#06b6d4','#10b981','#f59e0b',
+    '#ef4444','#a855f7','#ec4899','#14b8a6',
+    '#f97316','#84cc16'
+  ];
+  new Chart(document.getElementById('pieChart'),{
+    type:'doughnut',
+    data:{
+      labels: catLabels,
+      datasets:[{
+        data: catCounts,
+        backgroundColor: pieColors.slice(0, catLabels.length),
+        borderWidth:0,
+        hoverOffset:5
+      }]
+    },
+    options:{
+      cutout:'65%',
+      plugins:{
+        legend:{
+          position:'bottom',
+          labels:{font:{family:'DM Sans',size:11},padding:14}
+        },
+        tooltip:{
+          callbacks:{
+            label: ctx => ` ${ctx.label}: ${ctx.parsed} product${ctx.parsed!==1?'s':''}`
+          }
+        }
+      }
+    }
+  });
+
+  // Auto-dismiss messages
+  setTimeout(()=>{
+    document.querySelectorAll('.alert').forEach(a=>{
+      a.style.transition='opacity .5s';
+      a.style.opacity='0';
+      setTimeout(()=>a.remove(),500);
+    });
+  },4000);
+});
+</script>
+</body>
+</html>

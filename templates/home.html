@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhara Enterprise | Your Trusted Local Electronics Shop</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #f97316;      /* Vibrant Sunset Orange */
+            --primary-soft: #fff7ed; /* Soft Orange tint */
+            --dark: #1e1b4b;         /* Deep Indigo/Purple */
+            --body-bg: #fafaf9;      /* Warm Pearl White */
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            --accent-red: #e11d48;   /* Ruby Red for badges */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* =========================================
+            NEW LOGO ANIMATION KEYFRAMES
+           ========================================= */
+
+        /* Logo Fades and Scales in from Blur */
+        @keyframes logoEntrance {
+            0% {
+                opacity: 0;
+                transform: scale(0.85) translateY(20px);
+                filter: blur(10px) brightness(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0) brightness(1);
+            }
+        }
+
+        /* Breathing Glow Effect */
+        @keyframes logoPulse {
+            0% { filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.2)); }
+            50% { filter: drop-shadow(0 0 25px rgba(249, 115, 22, 0.6)); }
+            100% { filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.2)); }
+        }
+
+        /* Scanning Line Movement */
+        @keyframes scanMove {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* =========================================
+            PRELOADER STYLES
+           ========================================= */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1), opacity 1s ease;
+        }
+
+        #preloader.hide-loader {
+            transform: translateY(-100%);
+            visibility: hidden;
+        }
+
+        .preloader-content {
+            text-align: center;
+            position: relative; /* Required for the scan line */
+            padding: 20px;
+        }
+
+        .logo-img {
+            width: 250px;
+            height: auto;
+            display: block;
+            border-radius: 15px;
+        }
+
+        /* The Logo Animation Class */
+        .preloader-logo {
+            animation:
+                logoEntrance 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards,
+                logoPulse 2s ease-in-out infinite 1.2s;
+            opacity: 0;
+        }
+
+        /* The Tech Scanning Line */
+        .preloader-content::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary);
+            animation: scanMove 2s linear infinite;
+            z-index: 10;
+        }
+
+        /* =========================================
+            HEADER & NAVIGATION
+           ========================================= */
+        @keyframes slideDownFade {
+            from { opacity: 0; transform: translateY(-100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            padding: 0 8%;
+            justify-content: space-between;
+            animation: slideDownFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 2.6s both;
+        }
+
+        .logo-link { text-decoration: none; display: flex; align-items: center; }
+        .nav-logo-img { height: 60px; transition: transform 0.3s ease; }
+        .nav-logo-img:hover { transform: scale(1.05); }
+
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-links a:not(.nav-icon-link) {
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        .nav-icon-link {
+            position: relative;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 1.15rem;
+            width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 10px; transition: var(--transition);
+        }
+        .nav-icon-link:hover { background: var(--primary-soft); color: var(--primary); }
+
+        .badge {
+            position: absolute; top: 2px; right: 2px;
+            background: var(--accent-red); color: white;
+            font-size: 10px; font-weight: 800; min-width: 17px; height: 17px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            border: 2px solid white;
+        }
+
+        .login-btn {
+            background: var(--dark);
+            color: #fff !important;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600 !important;
+            margin-left: 5px;
+        }
+
+        /* =========================================
+            HERO SLIDER & KEYFRAMES
+           ========================================= */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes kenBurns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+
+        .hero { height: 90vh; width: 100%; position: relative; overflow: hidden; background: #e2e8f0; }
+        .slider-container { display: flex; width: 300%; height: 100%; animation: luxeSlide 15s infinite; }
+        .slide { width: 100%; height: 100%; position: relative; overflow: hidden; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); animation: kenBurns 15s ease-in-out infinite alternate; }
+
+        .slide-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(30, 27, 75, 0.9) 0%, rgba(30, 27, 75, 0.3) 100%);
+            display: flex; align-items: center; padding: 0 8%;
+        }
+
+        .hero-content { max-width: 650px; color: #fff; animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 2.8s both; }
+        .hero-content span { color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; display: block; margin-bottom: 10px; }
+        .hero-content h2 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 25px; }
+        .hero-btn { display: inline-block; padding: 16px 35px; background: var(--primary); color: #fff; text-decoration: none; border-radius: 12px; font-weight: 700; transition: var(--transition); }
+
+        @keyframes luxeSlide {
+            0%, 25% { transform: translateX(0); }
+            33%, 58% { transform: translateX(-33.33%); }
+            66%, 91% { transform: translateX(-66.66%); }
+            100% { transform: translateX(0); }
+        }
+
+        /* FEATURES SECTION */
+        .features { padding: 100px 8%; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header h1 { font-size: 2.5rem; font-weight: 800; color: var(--dark); }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .info-card { background: var(--card-bg); padding: 40px; border-radius: 24px; box-shadow: var(--shadow); transition: var(--transition); text-align: center; }
+        .info-card:hover { transform: translateY(-10px); }
+        .icon-box { width: 70px; height: 70px; background: var(--primary-soft); color: var(--primary); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 25px; }
+
+        /* WELCOME ALERT */
+        #welcome-alert {
+            position: fixed; top: 100px; right: -400px; width: 320px;
+            background: #ffffff; border-left: 5px solid var(--primary); border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); padding: 20px; z-index: 999;
+            display: flex; gap: 15px; opacity: 0; transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        #welcome-alert.show-alert { right: 30px; opacity: 1; }
+        .close-alert { position: absolute; top: 10px; right: 15px; background: none; border: none; color: #999; cursor: pointer; }
+
+        /* FOOTER */
+        .footer { background: var(--dark); color: #fff; padding: 80px 8% 40px; border-radius: 40px 40px 0 0; }
+        .footer-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 50px; }
+        .footer-box a { color: #94a3b8; text-decoration: none; display: block; margin-bottom: 12px; transition: var(--transition); }
+        .footer-box a:hover { color: var(--primary); padding-left: 5px; }
+        .footer-bottom { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+<div id="welcome-alert">
+    <button class="close-alert" onclick="closeAlert()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="alert-icon" style="color: var(--primary); background: var(--primary-soft); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+        <i class="fa-solid fa-gift"></i>
+    </div>
+    <div class="alert-content">
+        <h4 style="color: var(--dark); margin-bottom: 5px;">New Here?</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Register now to unlock exclusive member discounts!</p>
+        <a href="/register/" style="color: var(--primary); font-weight: 700; text-decoration: none;">Create Account &rarr;</a>
+    </div>
+</div>
+
+<div id="preloader">
+    <div class="preloader-content">
+        <img src="static/logo.jpeg" alt="Dhara Enterprise Logo" class="logo-img preloader-logo">
+    </div>
+</div>
+
+<nav class="header-nav">
+    <a href="/" class="logo-link">
+        <img src="static/logo.jpeg" alt="Dhara Enterprise" class="nav-logo-img">
+    </a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/about1/">About Us</a>
+        <a href="/product/">Products</a>
+        <a href="/gallery/">Gallery</a>
+        <a href="{% url 'contact' %}">Contact</a>
+        <a href="/feedback/">Feedback</a>
+
+        <a href="/profile/" class="nav-icon-link" title="My Profile"><i class="fa-regular fa-user"></i></a>
+        <a href="/wishlist/" class="nav-icon-link" title="Wishlist"><i class="fa-regular fa-heart"></i><span class="badge" id="wishlist-count">0</span></a>
+        <a href="/cart/" class="nav-icon-link" title="Cart"><i class="fa-solid fa-cart-shopping"></i><span class="badge" id="cart-count">0</span></a>
+
+         <a href="{% url 'login' %}">Login</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="slider-container">
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1595246140625-573b715d11dc?q=80&w=1600" alt="Mixer Grinder">
+            <div class="slide-overlay">
+                <div class="hero-content">
+                    <span>Kitchen Essentials</span>
+                    <h2>Powerful Mixers<br>& Grinders.</h2>
+                    <a href="/product/" class="hero-btn">Shop Mixers</a>
+                </div>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1626372412892-36423c2bd92e?q=80&w=1600" alt="Electric Iron">
+            <div class="slide-overlay">
+                <div class="hero-content">
+                    <span>Home Utilities</span>
+                    <h2>Heavy Weight<br>Dry & Steam Irons.</h2>
+                    <a href="/product/" class="hero-btn">View Irons</a>
+                </div>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1618941716939-553300525508?q=80&w=1600" alt="Ceiling Fan">
+            <div class="slide-overlay">
+                <div class="hero-content">
+                    <span>Cooling Solutions</span>
+                    <h2>High Speed<br>Ceiling Fans.</h2>
+                    <a href="/product/" class="hero-btn">Buy Fans</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="section-header">
+        <h1>Why Shop Local With Us?</h1>
+    </div>
+    <div class="grid-container">
+        <div class="info-card">
+            <div class="icon-box"><i class="fa-solid fa-truck-fast"></i></div>
+            <h3>Same-Day Local Delivery</h3>
+            <p>We deliver right to your doorstep within hours for all local orders.</p>
+               <a href="/delivery/" class="hero-btn"> delivery</a>
+        </div>
+        <div class="info-card">
+            <div class="icon-box"><i class="fa-solid fa-handshake"></i></div>
+            <h3>Trusted Warranty</h3>
+            <p>Genuine products with official company warranty and reliable support.</p>
+               <a href="/Trusted Warranty/" class="hero-btn"> Trusted Warranty</a>
+        </div>
+        <div class="info-card">
+            <div class="icon-box"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+            <h3>Installation & Repair</h3>
+            <p>Our expert technicians handle installation and quick repairs.</p>
+              <a href="/installation-repair/" class="hero-btn"> installation-repair</a>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-box" style="flex: 1.5;">
+            <img src="static/logo.jpeg" alt="Dhara Enterprise" style="width: 150px; height: auto; margin-bottom: 20px;">
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 15px;">Your neighborhood electronics partner since 2011. Serving Babra and surrounding areas.</p>
+        </div>
+        <div class="footer-box">
+            <h3>Shop</h3>
+            <a href="/">Home Appliances</a>
+            <a href="/product/">Smartphones</a>
+            <a href="/contact/">Visit Store</a>
+        </div>
+        <div class="footer-box">
+            <h3>Visit Us</h3>
+            <a href="#"><i class="fa-solid fa-phone" style="margin-right: 8px;"></i> +91 98765 43210</a>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 10px;">Babra, Gujarat, India</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 Dhara Enterprise. Your Local Tech Partner.
+    </div>
+</footer>
+
+<script>
+    window.addEventListener('load', function() {
+        const preloader = document.getElementById('preloader');
+        const welcomeAlert = document.getElementById('welcome-alert');
+
+        // Hide preloader after 2.5 seconds
+        setTimeout(() => {
+            preloader.classList.add('hide-loader');
+
+            // Show welcome alert
+            setTimeout(() => {
+                welcomeAlert.classList.add('show-alert');
+                setTimeout(() => { closeAlert(); }, 6000);
+            }, 500);
+        }, 2500);
+    });
+
+    function closeAlert() {
+        const alert = document.getElementById('welcome-alert');
+        if(alert) alert.classList.remove('show-alert');
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Add Gallery</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 450px;
+            margin: 60px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            color: #444;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 18px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        button {
+            width: 100%;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0b5ed7;
+        }
+
+        hr {
+            margin: 40px 0 20px;
+        }
+
+        table {
+            width: 90%;
+            margin: auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #0d6efd;
+            color: white;
+            padding: 12px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        img {
+            border-radius: 6px;
+        }
+
+        .no-record {
+            text-align: center;
+            color: red;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Admin - Add Gallery Image</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label>Title</label>
+        <input type="text" name="title" required>
+
+        <label>Description</label>
+        <textarea name="description"></textarea>
+
+        <label>Upload Image</label>
+        <input type="file" name="image" required>
+
+        <button type="submit">Upload Gallery</button>
+    </form>
+</div>
+
+<hr>
+
+<h2 style="text-align:center;">Gallery Records</h2>
+
+{% if galleries %}
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Image</th>
+        <th>Date</th>
+    </tr>
+
+    {% for g in galleries %}
+    <tr>
+        <td>{{ g.id }}</td>
+        <td>{{ g.title }}</td>
+        <td>{{ g.description }}</td>
+        <td>
+            {% if g.image %}
+                <img src="{{ g.image.url }}" width="100" height="80" style="object-fit:cover;">
+            {% else %}
+                No Image
+            {% endif %}
+        </td>
+        <td>{{ g.uploaded_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+    <p class="no-record">No Gallery Records Found</p>
+{% endif %}
+
+</body>
+</html>

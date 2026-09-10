@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feedback</title>
+    <style>
+        body {
+            background: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+        .box {
+            width: 420px;
+            background: white;
+            padding: 25px;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button.loading {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        /* Loader */
+        .loader {
+            display: none;
+            margin: 10px auto;
+            width: 28px;
+            height: 28px;
+            border: 4px solid #ccc;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            font-size: 14px;
+            text-align: left;
+        }
+        table th {
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Feedback</h2>
+
+    <form method="post" onsubmit="showLoading()">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="email" name="email" placeholder="Email">
+        <textarea name="message" placeholder="Message" required></textarea>
+
+        <button type="submit" id="submitBtn">Submit</button>
+        <div class="loader" id="loader"></div>
+    </form>
+
+    <hr>
+
+    <h3>Feedback List</h3>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Message</th>
+        </tr>
+
+        {% for f in feedbacks %}
+        <tr>
+            <td>{{ f.name }}</td>
+            <td>{{ f.email }}</td>
+            <td>{{ f.message }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No feedback found</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script>
+    function showLoading() {
+        document.getElementById("submitBtn").classList.add("loading");
+        document.getElementById("submitBtn").innerText = "Submitting...";
+        document.getElementById("loader").style.display = "block";
+    }
+</script>
+
+</body>
+</html>

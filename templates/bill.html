@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice - Dhara Enterprise</title>
+    <style>
+        .invoice-box {
+            max-width: 800px; margin: auto; padding: 30px;
+            border: 1px solid #eee; font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555; line-height: 24px;
+        }
+        .invoice-box table { width: 100%; line-height: inherit; text-align: left; border-collapse: collapse; }
+        .invoice-box table td { padding: 5px; vertical-align: top; }
+        .invoice-box table tr td:nth-child(2) { text-align: right; }
+        .header { border-bottom: 2px solid #4f46e5; padding-bottom: 20px; }
+        .total-row { font-weight: bold; background: #f9f9f9; }
+        .print-btn { background: #4f46e5; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 5px; margin-bottom: 20px; }
+        @media print { .print-btn { display: none; } }
+    </style>
+</head>
+<body>
+
+<div class="invoice-box">
+    <button class="print-btn" onclick="window.print()">Print Invoice</button>
+    
+    <table cellpadding="0" cellspacing="0">
+        <tr class="header">
+            <td>
+                <h1 style="color:#4f46e5; margin:0;">Dhara Enterprise</h1>
+                <p>Electronics Shop | Babra, Gujarat</p>
+            </td>
+            <td>
+                <strong>Invoice #:</strong> {{ product.id }}<br>
+                <strong>Date:</strong> {% now "jS F Y" %}<br>
+            </td>
+        </tr>
+
+        <tr class="information">
+            <td colspan="2">
+                <table>
+                    <tr>
+                        <td>
+                            <strong>Bill To:</strong><br>
+                            Cash Sales<br>
+                            Customer Copy
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr class="heading" style="background: #eee; font-weight: bold;">
+            <td>Item Description</td>
+            <td>Price</td>
+        </tr>
+
+        <tr>
+            <td>
+                {{ product.Product_Name }}<br>
+                <small>Brand: {{ product.Brand }} | Model: {{ product.Model_Type }}</small>
+            </td>
+            <td>₹{{ product.Unit_Price }}</td>
+        </tr>
+
+        <tr class="details">
+            <td>Quantity</td>
+            <td>{{ product.Quantity }}</td>
+        </tr>
+
+        <tr class="details">
+            <td>GST ({{ product.Gst_Percent }}%)</td>
+            <td>₹{{ gst_amount|floatformat:2 }}</td>
+        </tr>
+
+        <tr class="total-row">
+            <td>Total Amount</td>
+            <td>₹{{ product.Total_Price }}</td>
+        </tr>
+    </table>
+    
+    <div style="margin-top: 50px; text-align: center; font-size: 12px;">
+        Thank you for shopping at Dhara Enterprise!
+    </div>
+</div>
+
+</body>
+</html>

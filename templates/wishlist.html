@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist | ElectroMart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --gold:#b38b4d; --dark:#1a1c20; --bg:#fdfcf9; --red:#e11d48; --green:#15803d; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
+        body { background:var(--bg); padding:100px 5% 60px; color:var(--dark); }
+        .header-nav {
+            position:fixed; top:0; left:0; width:100%; z-index:1000;
+            background:rgba(253,252,249,0.96); backdrop-filter:blur(15px);
+            height:75px; display:flex; align-items:center; padding:0 5%;
+            justify-content:space-between; box-shadow:0 2px 20px rgba(0,0,0,0.06);
+        }
+        .logo-link { text-decoration:none; }
+        .nav-logo-img { height:50px; }
+        .nav-links { display:flex; gap:20px; align-items:center; }
+        .nav-links a { text-decoration:none; color:var(--dark); font-weight:600; font-size:14px; transition:.3s; }
+        .nav-links a:hover { color:var(--gold); }
+        .nav-icon { position:relative; font-size:1.2rem; }
+        .badge { position:absolute; top:-6px; right:-10px; background:var(--red); color:#fff; font-size:10px; font-weight:800; min-width:18px; height:18px; padding:0 4px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+        .logout-btn { background:var(--dark)!important; color:#fff!important; padding:9px 22px; border-radius:9px; }
+        .logout-btn:hover { background:var(--gold)!important; }
+        .page-header { text-align:center; margin-bottom:50px; }
+        .page-header span { letter-spacing:5px; font-size:11px; font-weight:700; color:var(--gold); text-transform:uppercase; }
+        .page-header h1 { font-family:'Playfair Display',serif; font-size:2.8rem; margin-top:8px; }
+        .wishlist-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:30px; max-width:1300px; margin:auto; }
+        .wish-card { background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 8px 25px rgba(0,0,0,0.06); transition:all .4s ease; display:flex; flex-direction:column; }
+        .wish-card:hover { transform:translateY(-6px); box-shadow:0 20px 40px rgba(0,0,0,0.1); }
+        .wish-img { width:100%; aspect-ratio:1/1; background:#f5f5f5; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .wish-img img { max-width:80%; max-height:80%; object-fit:contain; }
+        .wish-body { padding:20px; display:flex; flex-direction:column; gap:8px; flex:1; }
+        .wish-brand { font-size:10px; letter-spacing:2px; color:var(--gold); font-weight:800; text-transform:uppercase; }
+        .wish-name { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--dark); line-height:1.3; }
+        .wish-price { font-size:1.5rem; font-weight:700; color:var(--dark); }
+        .wish-actions { display:flex; gap:10px; margin-top:auto; padding-top:15px; border-top:1px solid rgba(0,0,0,0.06); }
+        .btn-buy { flex:1; padding:11px; background:var(--gold); color:#fff; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; transition:.3s; display:flex; align-items:center; justify-content:center; gap:6px; text-decoration:none; }
+        .btn-buy:hover { background:#9c7437; }
+        .btn-remove { padding:11px 14px; background:#fee2e2; color:var(--red); border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; transition:.3s; }
+        .btn-remove:hover { background:var(--red); color:#fff; }
+        .empty-state { text-align:center; padding:80px 20px; color:#888; max-width:400px; margin:auto; }
+        .empty-state i { font-size:4rem; color:#ddd; margin-bottom:20px; display:block; }
+        .empty-state h2 { font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--dark); margin-bottom:10px; }
+        .empty-state a { display:inline-block; margin-top:20px; padding:12px 30px; background:var(--gold); color:#fff; text-decoration:none; border-radius:10px; font-weight:700; transition:.3s; }
+        .empty-state a:hover { background:#9c7437; }
+        .toast { position:fixed; bottom:30px; right:30px; padding:13px 20px; border-radius:10px; color:#fff; font-size:14px; font-weight:600; z-index:9999; opacity:0; transform:translateY(20px); transition:.4s; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        .toast.success { background:var(--green); }
+        .toast.error   { background:var(--red); }
+        .toast.dark    { background:var(--dark); }
+    </style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<nav class="header-nav">
+    <a href="/" class="logo-link"><img src="/static/logo.jpeg" class="nav-logo-img" alt="Logo"></a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/product/" style="color:var(--gold)">Products</a>
+        <a href="/product/wishlist/" class="nav-icon">
+            <i class="fa-regular fa-heart"></i>
+            <span class="badge">{{ wishlist_items|length }}</span>
+        </a>
+        <a href="/product/cart/" class="nav-icon">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </a>
+        <a href="/logout/" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="page-header">
+    <span>Your Favourites</span>
+    <h1>My Wishlist</h1>
+</div>
+
+{% if wishlist_items %}
+<div class="wishlist-grid">
+    {% for item in wishlist_items %}
+    <div class="wish-card" id="wish-{{ item.id }}">
+        <div class="wish-img">
+            {% if item.product and item.product.ProductImage %}
+                <img src="/media/{{ item.product.ProductImage }}" alt="{{ item.product_name }}">
+            {% else %}
+                <img src="https://via.placeholder.com/300x300?text=No+Image" alt="No Image">
+            {% endif %}
+        </div>
+        <div class="wish-body">
+            <div class="wish-brand">{% if item.product %}{{ item.product.Brand|default:"Exclusive" }}{% else %}Exclusive{% endif %}</div>
+            <div class="wish-name">{{ item.product_name }}</div>
+            <div class="wish-price">₹ {{ item.product_price }}</div>
+            <div class="wish-actions">
+                {% if item.product %}
+                <a href="/product/order/{{ item.product.id }}/" class="btn-buy">
+                    <i class="fas fa-bolt"></i> Buy Now
+                </a>
+                {% endif %}
+                <button class="btn-remove"
+                    onclick="removeWishlistItem({{ item.id }}, {{ item.product_id }}, this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="far fa-heart"></i>
+    <h2>Your wishlist is empty</h2>
+    <p>Save products you love and find them here anytime.</p>
+    <a href="/product/"><i class="fas fa-arrow-left"></i> Browse Products</a>
+</div>
+{% endif %}
+
+<script>
+    const CSRF = '{{ csrf_token }}';
+    function showToast(msg, type='dark') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast show ' + type;
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.className = 'toast', 3000);
+    }
+
+    async function removeWishlistItem(wishlistItemId, productId, btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+            const res  = await fetch(`/product/wishlist/toggle-ajax/${productId}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('wish-' + wishlistItemId).remove();
+                showToast('Removed from wishlist.', 'dark');
+                if (document.querySelectorAll('.wish-card').length === 0) location.reload();
+            } else {
+                showToast('Error: ' + (data.error || 'Try again.'), 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash"></i>';
+            }
+        } catch(e) {
+            showToast('Request failed.', 'error');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash"></i>';
+        }
+    }
+</script>
+</body>
+</html>

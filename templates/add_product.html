@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4e54c8;
+            --secondary: #8f94fb;
+            --accent: #ff6b6b;
+            --text-dark: #2d3436;
+            --text-light: #636e72;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            padding: 30px;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .header h2 {
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        form {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        /* Full width for Name, Image, and Description */
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+        }
+
+        /* SHARED STYLES FOR INPUT AND TEXTAREA */
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: 0.3s ease;
+            outline: none;
+            background: #f8f9fa;
+            color: var(--text-dark);
+        }
+
+        .input-group textarea {
+            resize: vertical; /* Allows user to make it taller, but not wider */
+            min-height: 100px;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(78, 84, 200, 0.1);
+        }
+
+        /* Custom File Upload */
+        .upload-area {
+            border: 2px dashed #cbd5e0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+            background: #f8f9fa;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: #f0f2ff;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        #preview-container {
+            display: none;
+            margin-top: 15px;
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        #preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Buttons */
+        .btn-submit {
+            grid-column: span 2;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: var(--white);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 0 5px 15px rgba(78, 84, 200, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(78, 84, 200, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            form {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+            .header {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Add New Product</h2>
+        <p>Enter the product details below</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="input-group full-width">
+            <label>Product Name</label>
+            <input type="text" name="Product_Name" placeholder="e.g. Wireless Headphones" required>
+        </div>
+
+        <div class="input-group">
+            <label>Category</label>
+            <input type="text" name="Category" placeholder="Electronics">
+        </div>
+
+        <div class="input-group">
+            <label>Brand</label>
+            <input type="text" name="Brand" placeholder="Sony">
+        </div>
+
+        <div class="input-group">
+            <label>Model</label>
+            <input type="text" name="Model_Type" placeholder="WH-1000XM4">
+        </div>
+
+        <div class="input-group">
+            <label>Quantity</label>
+            <input type="number" name="Quantity" placeholder="0" required>
+        </div>
+
+        <div class="input-group">
+            <label>Unit Price</label>
+            <input type="number" step="0.01" name="Unit_Price" placeholder="0.00" required>
+        </div>
+
+        <div class="input-group">
+            <label>GST (%)</label>
+            <input type="number" step="0.01" name="Gst_Percent" placeholder="18%">
+        </div>
+
+        <div class="input-group full-width">
+            <label>Product Description</label>
+            <textarea name="Description" rows="4" placeholder="Enter detailed product information here..."></textarea>
+        </div>
+
+        <div class="full-width">
+            <label style="font-weight: 500; color: var(--text-dark); margin-bottom: 8px; display:block;">Product Image</label>
+
+            <label class="upload-area">
+                <input type="file" name="ProductImage" accept="image/*" onchange="previewImage(event)">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Click to upload or drag image here</div>
+            </label>
+
+            <div id="preview-container">
+                <img id="preview" src="" alt="Image Preview">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Save Product</button>
+    </form>
+</div>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const previewContainer = document.getElementById('preview-container');
+        const img = document.getElementById('preview');
+        const uploadText = document.querySelector('.upload-text');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                previewContainer.style.display = "block";
+                uploadText.textContent = input.files[0].name;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+</body>
+</html>

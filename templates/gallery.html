@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gallery | Dhara Enterprise</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            padding: 40px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Our Gallery</h1>
+
+<div class="grid">
+    {% for g in galleries %}
+        <div class="card">
+            <img src="{{ g.image.url }}" alt="{{ g.title }}">
+            <h3>{{ g.title }}</h3>
+            <p>{{ g.description }}</p>
+        </div>
+    {% empty %}
+        <p>No Gallery Images Found</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>

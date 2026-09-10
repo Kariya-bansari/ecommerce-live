@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Dhara Enterprise</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-glow: rgba(37, 99, 235, 0.2);
+            --secondary: #1d4ed8;
+            --dark: #0f172a;
+            --text-muted: #64748b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --input-bg: #f1f5f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* --- 1. ANIMATED BACKGROUND BLOBS --- */
+        .bg-shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: floatShape 10s ease-in-out infinite alternate;
+        }
+        .shape-1 {
+            width: 400px; height: 400px;
+            background: rgba(37, 99, 235, 0.15);
+            top: -100px; left: -100px;
+        }
+        .shape-2 {
+            width: 300px; height: 300px;
+            background: rgba(147, 51, 234, 0.1);
+            bottom: -50px; right: -50px;
+            animation-delay: -5s;
+        }
+
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 40px) scale(1.1); }
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .contact-section {
+            padding: 80px 8% 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- 2. TITLE FADE IN ANIMATION --- */
+        .contact-title {
+            text-align: center;
+            margin-bottom: 50px;
+            opacity: 0;
+            animation: fadeInDown 0.8s ease-out forwards;
+        }
+
+        .contact-title h1 {
+            font-size: 46px;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+        
+        .contact-title p {
+            color: var(--text-muted);
+            font-size: 18px;
+        }
+
+        .contact-container {
+            width: 100%;
+            max-width: 1100px; 
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05), border 1px solid rgba(255,255,255,0.5);
+            display: flex;
+            gap: 50px;
+            position: relative;
+        }
+
+        /* --- 3. SLIDE-IN ANIMATIONS FOR MAP AND FORM --- */
+        .contact-map {
+            opacity: 0;
+            animation: slideRight 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.2s;
+        }
+        
+        .contact-form {
+            opacity: 0;
+            animation: slideLeft 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards 0.4s;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideLeft {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* --- MAP STYLES & HOVER EFFECT --- */
+        .contact-map {
+            flex: 1;
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 450px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .contact-map:hover {
+            transform: translateY(-5px); /* Map lifts up slightly on hover */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .contact-map iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            filter: contrast(1.1) opacity(0.9);
+            transition: 0.3s;
+        }
+        
+        .contact-map:hover iframe {
+            filter: contrast(1.1) opacity(1);
+        }
+
+        /* --- FORM STYLES & INPUT ANIMATIONS --- */
+        .contact-form {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-form h3 {
+            font-size: 24px;
+            color: var(--dark);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 20px;
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group textarea ~ i {
+            top: 22px; 
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 16px 16px 16px 50px; /* Space for the icon */
+            border-radius: 14px;
+            border: 2px solid transparent;
+            background: var(--input-bg);
+            outline: none;
+            font-size: 15px;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease; /* Smooth transition for typing */
+        }
+
+        .contact-form input::placeholder,
+        .contact-form textarea::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        /* 4. Glowing input fields when clicked */
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        .contact-form input:focus ~ i,
+        .contact-form textarea:focus ~ i {
+            color: var(--primary); /* Icon turns blue */
+            transform: scale(1.1); /* Icon pops slightly */
+        }
+
+        /* 5. Animated Submit Button */
+        .contact-form button {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 10px 20px var(--primary-glow);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .contact-form button:hover {
+            transform: translateY(-3px); /* Button lifts up */
+            box-shadow: 0 15px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        /* 6. Button Loading Spinner */
+        .btn-loading {
+            pointer-events: none; 
+            opacity: 0.9;
+        }
+
+        .btn-loading .btn-text {
+            visibility: hidden; 
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: 0; left: 0; bottom: 0; right: 0;
+            margin: auto;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 7. Success Message Pop-In */
+        .success-msg {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* RESPONSIVE DESIGN FOR MOBILE */
+        @media (max-width: 900px) {
+            .contact-container {
+                flex-direction: column; 
+                padding: 30px;
+                gap: 30px;
+            }
+            .contact-map {
+                min-height: 350px;
+                order: 2; /* Map goes below form on mobile */
+            }
+            .contact-form {
+                order: 1;
+            }
+            .contact-title h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
+
+<section class="contact-section">
+    <div class="contact-title">
+        <h1>Let's Connect</h1>
+        <p>We'd love to hear from you. Send us a message today.</p>
+    </div>
+
+    <div class="contact-container">
+        
+        <div class="contact-map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14815.184134914105!2d71.29177119566952!3d21.84606703901452!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3958bc9a8d9e7b9b%3A0x6b1e605d8f28d8!2sBabra%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+
+        <div class="contact-form">
+            <h3>Send a Message</h3>
+
+            {% if success %}
+            <div class="success-msg">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ success }}
+            </div>
+            {% endif %}
+
+            <form method="POST" id="contactForm">
+                {% csrf_token %}
+
+                <div class="input-group">
+                    <input type="text" name="name" placeholder="Full Name" required>
+                    <i class="fa-regular fa-user"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" name="email" placeholder="Email Address" required>
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" name="subject" placeholder="Subject" required>
+                    <i class="fa-regular fa-comment-dots"></i>
+                </div>
+
+                <div class="input-group">
+                    <textarea rows="5" name="message" placeholder="How can we help you?" required></textarea>
+                    <i class="fa-solid fa-pen-clip"></i>
+                </div>
+
+                <button type="submit" id="submitBtn">
+                    <span class="btn-text">Send Message <i class="fa-solid fa-paper-plane" style="margin-left: 5px;"></i></span>
+                </button>
+            </form>
+
+        </div>
+    </div>
+</section>
+
+<script>
+    document.getElementById("contactForm").addEventListener("submit", function() {
+        document.getElementById("submitBtn").classList.add("btn-loading");
+    });
+</script>
+
+</body>
+</html>

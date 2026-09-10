@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trusted Warranty | ElectroMart</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* --- NEW MODERN TECH COLOR THEME --- */
+            --bg-color: #f3f4f6;         /* Soft Gray Background */
+            --accent-color: #4f46e5;     /* Electric Indigo */
+            --accent-soft: #e0e7ff;      /* Very Light Indigo */
+            --dark-color: #111827;       /* Midnight Dark */
+            --card-bg: #ffffff;          /* Pure White */
+            --text-main: #374151;        /* Dark Gray Text */
+            --text-muted: #6b7280;       /* Medium Gray Text */
+            --accent-red: #ef4444;       /* Notification Badge Red */
+            --transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-main);
+            /* Added padding so the fixed header doesn't cover the content */
+            padding-top: 100px;
+        }
+
+        /* =========================================
+           NAVIGATION HEADER STYLES
+           ========================================= */
+        .header-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            /* Slide down animation on load */
+            animation: slideDownFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+        }
+
+        @keyframes slideDownFade {
+            from { opacity: 0; transform: translateY(-100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-link { text-decoration: none; display: flex; align-items: center; }
+        .nav-logo-img { height: 55px; width: auto; transition: var(--transition); }
+        .nav-logo-img:hover { transform: scale(1.05); }
+
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a:not(.nav-icon-link) {
+            text-decoration: none; color: var(--dark-color); font-size: 15px;
+            font-weight: 600; transition: var(--transition);
+        }
+        .nav-links a:not(.nav-icon-link):hover { color: var(--accent-color); }
+
+        .nav-icon-link {
+            position: relative; text-decoration: none; color: var(--dark-color);
+            font-size: 1.25rem; display: flex; align-items: center;
+            justify-content: center; transition: var(--transition);
+        }
+        .nav-icon-link:hover { color: var(--accent-color); }
+
+        .badge {
+            position: absolute; top: -6px; right: -10px; background: var(--accent-red);
+            color: white; font-size: 10px; font-weight: 800; min-width: 18px;
+            height: 18px; padding: 0 4px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; border: 2px solid var(--card-bg);
+        }
+
+        .login-btn {
+            background: var(--dark-color) !important; color: #fff !important;
+            padding: 10px 24px; border-radius: 10px; font-weight: 600 !important;
+            margin-left: 10px; transition: var(--transition);
+        }
+        .login-btn:hover {
+            background: var(--accent-color) !important; transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        @media (max-width: 900px) {
+            .nav-links a:not(.nav-icon-link, .login-btn) { display: none; }
+            .nav-logo-img { height: 45px; }
+        }
+
+        /* =========================================
+           TRUST & WARRANTY SECTION STYLES
+           ========================================= */
+        .trust-section {
+            padding: 80px 5% 100px;
+        }
+
+        .trust-container {
+            max-width: 1300px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+        }
+
+        .trust-card {
+            text-align: center;
+            padding: 40px 30px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid rgba(79, 70, 229, 0.1); /* Subtle Indigo Border */
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            animation: fadeUp 0.8s ease-out backwards;
+        }
+
+        /* Staggered load animation */
+        .trust-card:nth-child(1) { animation-delay: 0.1s; }
+        .trust-card:nth-child(2) { animation-delay: 0.3s; }
+        .trust-card:nth-child(3) { animation-delay: 0.5s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Subtle Indigo Glow on Hover */
+        .trust-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, rgba(79, 70, 229, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .trust-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(17, 24, 39, 0.08);
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+
+        .trust-card:hover::before {
+            opacity: 1;
+        }
+
+        .trust-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: var(--accent-soft);
+            color: var(--accent-color);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.1);
+        }
+
+        .trust-card:hover .trust-icon {
+            transform: scale(1.1) rotateY(15deg);
+            background: var(--accent-color);
+            color: #ffffff;
+            box-shadow: 0 15px 25px rgba(79, 70, 229, 0.4);
+        }
+
+        .trust-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+
+        .trust-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .trust-section { padding: 40px 5% 80px; }
+            .trust-card { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="header-nav">
+        <a href="/" class="logo-link">
+            <img src="/static/logo.jpeg" alt="ElectroMart" class="nav-logo-img">
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about1/">About Us</a>
+            <a href="/product/">Products</a>
+            <a href="/gallery/">Gallery</a>
+            <a href="/contact/">Contact</a>
+
+            <a href="/profile/" class="nav-icon-link" title="My Profile">
+                <i class="fa-regular fa-user"></i>
+            </a>
+
+            <a href="/wishlist/" class="nav-icon-link" title="Wishlist">
+                <i class="fa-regular fa-heart"></i>
+                <span class="badge" id="wishlist-count">0</span>
+            </a>
+
+            <a href="/cart/" class="nav-icon-link" title="Cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="badge" id="cart-count">2</span>
+            </a>
+
+            <a href="/login/" class="login-btn">Login Now</a>
+        </div>
+    </nav>
+
+    <section class="trust-section">
+        <div class="trust-container">
+
+            <div class="trust-card">
+                <div class="trust-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3>Trusted Warranty</h3>
+                <p>We provide 100% genuine products with official brand warranties and priority after-sales service.</p>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon">
+                    <i class="fa-solid fa-certificate"></i>
+                </div>
+                <h3>100% Authentic</h3>
+                <p>Every product is sourced directly from original manufacturers, guaranteeing top-tier quality.</p>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <h3>Expert Support</h3>
+                <p>Our dedicated team of electronic experts is available round the clock to resolve your queries.</p>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

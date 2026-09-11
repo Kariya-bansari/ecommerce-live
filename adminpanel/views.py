@@ -13,6 +13,10 @@ def home(request):
 
 
 def dashboard(request):
+    # Must be logged in + staff
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('/login/?next=/admin-panel/')
+
     products = Product.objects.all()
     total_products = products.count()
     total_stock = sum(p.Quantity for p in products)
@@ -20,7 +24,6 @@ def dashboard(request):
     low_stock = products.filter(Quantity__lte=5)
 
     # ── CHART 1: Category Share (Donut) ──────────────────
-    # Group products by category, count items per category
     category_data = (
         products.values('Category')
         .annotate(count=Count('id'))
@@ -31,8 +34,27 @@ def dashboard(request):
 
     # ── CHART 2: Top 8 Products by Total Price (Bar) ──────
     top_products = products.order_by('-Total_Price')[:8]
-    bar_labels = [p.Product_Name[:20] for p in top_products]   # trim long names
+    bar_labels = [p.Product_Name[:20] for p in top_products]
     bar_prices = [float(p.Total_Price or 0) for p in top_products]
+
+    # Live order/user data — wrapped in try/except in case migration not yet applied
+    try:
+        all_orders = Order.objects.all().order_by('-created_at')
+        total_orders = Order.objects.count()
+        cart_items = Cart.objects.all().select_related('user')
+        wishlist_items = Wishlist.objects.all().select_related('user')
+    except Exception:
+        all_orders = []
+        total_orders = 0
+        cart_items = []
+        wishlist_items = []
+
+    try:
+        all_users = User.objects.filter(is_staff=False).order_by('-date_joined')
+        total_users = User.objects.filter(is_staff=False).count()
+    except Exception:
+        all_users = []
+        total_users = 0
 
     return render(request, "admin_dashboard.html", {
         "products": products,
@@ -41,18 +63,16 @@ def dashboard(request):
         "total_revenue": total_revenue,
         "low_stock": low_stock,
         "low_stock_count": low_stock.count(),
-        # Chart data — passed as JSON strings so JS can parse safely
         "cat_labels": json.dumps(cat_labels),
         "cat_counts": json.dumps(cat_counts),
         "bar_labels": json.dumps(bar_labels),
         "bar_prices": json.dumps(bar_prices),
-        # Live data from user orders
-        "all_orders": Order.objects.all().order_by('-created_at'),
-        "all_users": User.objects.filter(is_staff=False).order_by('-date_joined'),
-        "cart_items": Cart.objects.all().select_related('user'),
-        "wishlist_items": Wishlist.objects.all().select_related('user'),
-        "total_orders": Order.objects.count(),
-        "total_users": User.objects.filter(is_staff=False).count(),
+        "all_orders": all_orders,
+        "all_users": all_users,
+        "cart_items": cart_items,
+        "wishlist_items": wishlist_items,
+        "total_orders": total_orders,
+        "total_users": total_users,
     })
 
 

@@ -6,15 +6,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
-from accounts.views import login_view, register
+from accounts.views import login_view, register, logout_view
 
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # Login & Register
+    # Login, Register & Logout
     path("login/", login_view, name="login"),
     path("register/", register, name="register"),
-    path("logout/", include("accounts.urls")),  # make sure logout is here
+    path("logout/", logout_view, name="logout"),
 
     # ✅ FIXED: Store App now at /product/ (matches all your templates)
     path("product/", include("store.urls")),

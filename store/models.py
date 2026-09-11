@@ -44,6 +44,15 @@ class Order(models.Model):
         ('CARD', 'Card'),
         ('NETBANKING', 'Net Banking'),
     ]
+    STATUS_CHOICES = [
+        ('CONFIRMED', 'Confirmed'),
+        ('PROCESSING', 'Processing'),
+        ('SHIPPED', 'Shipped'),
+        ('OUT_FOR_DELIVERY', 'Out for Delivery'),
+        ('DELIVERED', 'Delivered'),
+        ('CANCELLED', 'Cancelled'),
+        ('RETURNED', 'Returned'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -53,6 +62,7 @@ class Order(models.Model):
     pincode = models.CharField(max_length=10)
     payment_mode = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='COD')
     total_amount = models.FloatField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='CONFIRMED')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

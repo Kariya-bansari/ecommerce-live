@@ -89,10 +89,21 @@
                                 <div class="order-id">Order #{{ order.id }}</div>
                                 <div class="order-date"><i class="fa-regular fa-calendar"></i> {{ order.created_at|date:"M d, Y - h:i A" }}</div>
                             </div>
-                            <div class="order-status"><i class="fa-solid fa-circle-check"></i> Confirmed</div>
+                            <!-- Status Badge -->
+                            {% if order.status == "DELIVERED" %}
+                                <div class="order-status" style="background:#dbeafe;color:#1d4ed8;"><i class="fa-solid fa-circle-check"></i> Delivered</div>
+                            {% elif order.status == "CANCELLED" %}
+                                <div class="order-status" style="background:#fee2e2;color:#dc2626;"><i class="fa-solid fa-ban"></i> Cancelled</div>
+                            {% elif order.status == "RETURNED" %}
+                                <div class="order-status" style="background:#fef3c7;color:#92400e;"><i class="fa-solid fa-rotate-left"></i> Returned</div>
+                            {% elif order.status == "SHIPPED" %}
+                                <div class="order-status" style="background:#f3e8ff;color:#7c3aed;"><i class="fa-solid fa-truck"></i> Shipped</div>
+                            {% else %}
+                                <div class="order-status"><i class="fa-solid fa-circle-check"></i> {{ order.get_status_display }}</div>
+                            {% endif %}
                             <div class="order-total">
                                 <span>Total Amount</span>
-                                <strong>?{{ order.total_amount|floatformat:2 }}</strong>
+                                <strong>₹{{ order.total_amount|floatformat:2 }}</strong>
                             </div>
                         </div>
                         <div class="order-items">
@@ -107,17 +118,31 @@
                             {% endfor %}
                         </div>
 
-                        <!-- Action Buttons -->
+                        <!-- Smart Action Buttons -->
                         <div class="order-actions">
+                            <!-- Track: always show -->
                             <a href="/product/orders/{{ order.id }}/track/" class="action-btn btn-track">
                                 <i class="fa-solid fa-map-location-dot"></i> Track Order
                             </a>
+
+                            <!-- Bill: always show -->
+                            <a href="/product/orders/{{ order.id }}/bill/" class="action-btn" style="background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0;">
+                                <i class="fa-solid fa-file-invoice"></i> View Bill
+                            </a>
+
+                            <!-- Cancel: only if NOT delivered/cancelled/returned -->
+                            {% if order.status not in "DELIVERED,CANCELLED,RETURNED" %}
                             <a href="/product/orders/{{ order.id }}/cancel/" class="action-btn btn-cancel">
                                 <i class="fa-solid fa-xmark"></i> Cancel Order
                             </a>
+                            {% endif %}
+
+                            <!-- Return: only if DELIVERED -->
+                            {% if order.status == "DELIVERED" %}
                             <a href="/product/orders/{{ order.id }}/return/" class="action-btn btn-return">
                                 <i class="fa-solid fa-rotate-left"></i> Return Order
                             </a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}

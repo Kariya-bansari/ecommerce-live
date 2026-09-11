@@ -253,6 +253,30 @@
         .footer-box a { color: #94a3b8; text-decoration: none; display: block; margin-bottom: 12px; transition: var(--transition); }
         .footer-box a:hover { color: var(--primary); padding-left: 5px; }
         .footer-bottom { margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center; color: #94a3b8; }
+        /* RESPONSIVE STYLES */
+        @media (max-width: 900px) {
+            .nav-links a:not(.nav-icon-link, .login-btn) { display: none; }
+            .header-nav { padding: 0 4%; }
+            .nav-logo-img { height: 45px; }
+        }
+        @media (max-width: 768px) {
+            .hero { height: 70vh; }
+            .hero-content h2 { font-size: 2.2rem; }
+            .features { padding: 60px 5%; }
+            .section-header h1 { font-size: 2rem; margin-bottom: 40px; }
+            .footer { padding: 60px 5% 30px; border-radius: 25px 25px 0 0; }
+            .footer-container { gap: 30px; }
+            .nav-links { gap: 10px; }
+            .login-btn { padding: 8px 16px; font-size: 14px; }
+        }
+        @media (max-width: 480px) {
+            .hero { height: 60vh; }
+            .hero-content h2 { font-size: 1.8rem; }
+            .hero-btn { padding: 12px 24px; font-size: 14px; }
+            .info-card { padding: 25px; }
+            #welcome-alert { width: 90%; right: -100%; top: 80px; }
+            #welcome-alert.show-alert { right: 5%; }
+        }
     </style>
 </head>
 <body>

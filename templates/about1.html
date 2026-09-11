@@ -63,6 +63,21 @@
             transition: background 0.3s, transform 0.3s !important;
         }
         .login-btn:hover { background: var(--primary) !important; transform: translateY(-2px) !important; }
+        
+        .menu-btn { display: none; }
+        @media (max-width: 950px) {
+            .menu-btn { display: block !important; font-size: 24px; cursor: pointer; color: var(--text); }
+            .nav-links {
+                position: absolute; top: 80px; left: -100%; width: 100%;
+                background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px);
+                flex-direction: column; padding: 20px 0; gap: 15px;
+                box-shadow: 0 10px 15px rgba(0,0,0,0.1); transition: 0.4s ease-in-out;
+            }
+            .nav-links.active { left: 0; }
+            .nav-links a:not(.nav-icon-link, .login-btn) { display: block; font-size: 1.1rem; }
+            .header-nav { padding: 0 5%; }
+            .nav-logo-img { height: 45px; }
+        }
         .login-btn::after { display: none !important; }
 
         /* HERO */
@@ -582,7 +597,8 @@
     <a href="/" class="logo-link">
         <img src="static/logo.jpeg" alt="Dhara Enterprise" class="nav-logo-img">
     </a>
-    <div class="nav-links">
+    <i class="fa-solid fa-bars menu-btn" id="menu-btn"></i>
+    <div class="nav-links" id="nav-links">
         <a href="/">Home</a>
         <a href="/about1/" class="active">About Us</a>
         <a href="/product/">Products</a>
@@ -959,6 +975,16 @@ if (storyImgWrap) storyObs.observe(storyImgWrap);
 if (storyText)    storyObs.observe(storyText);
 
 document.querySelectorAll('.values-title, .tl-title').forEach(el => observer.observe(el));
+
+/* Mobile Menu Toggle */
+const menuBtn = document.getElementById('menu-btn');
+if (menuBtn) {
+    menuBtn.addEventListener('click', function() {
+        document.getElementById('nav-links').classList.toggle('active');
+        this.classList.toggle('fa-bars');
+        this.classList.toggle('fa-xmark');
+    });
+}
 </script>
 
 </body>

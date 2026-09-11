@@ -42,6 +42,15 @@
         .item-info p { color: #64748b; font-size: 0.9rem; }
         .item-price { font-weight: 700; color: var(--dark); }
 
+        .order-actions { display: flex; gap: 10px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); flex-wrap: wrap; }
+        .action-btn { display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; text-decoration: none; transition: var(--transition); cursor: pointer; border: none; }
+        .btn-track { background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; }
+        .btn-track:hover { background: #1d4ed8; color: white; transform: translateY(-2px); }
+        .btn-cancel { background: #fff5f5; color: #e11d48; border: 1.5px solid #fecaca; }
+        .btn-cancel:hover { background: #e11d48; color: white; transform: translateY(-2px); }
+        .btn-return { background: #fffbeb; color: #b45309; border: 1.5px solid #fcd34d; }
+        .btn-return:hover { background: #b38b4d; color: white; transform: translateY(-2px); }
+
         .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 20px; border: 1px solid var(--border); }
         .empty-state i { font-size: 60px; color: #cbd5e1; margin-bottom: 20px; }
         .empty-state h3 { font-size: 1.5rem; color: var(--dark); margin-bottom: 10px; }
@@ -54,6 +63,8 @@
             .order-header { flex-direction: column; align-items: flex-start; }
             .order-total { text-align: left; margin-top: 10px; }
             .order-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .order-actions { flex-direction: column; }
+            .action-btn { justify-content: center; }
         }
     </style>
 </head>
@@ -91,9 +102,22 @@
                                         <h4>Product ID: #{{ item.product_id }}</h4>
                                         <p>Qty: {{ item.quantity }} &nbsp;|&nbsp; Payment: {{ order.payment_mode }}</p>
                                     </div>
-                                    <div class="item-price">?{{ item.price|floatformat:2 }}</div>
+                                    <div class="item-price">₹{{ item.price|floatformat:2 }}</div>
                                 </div>
                             {% endfor %}
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="order-actions">
+                            <a href="/product/orders/{{ order.id }}/track/" class="action-btn btn-track">
+                                <i class="fa-solid fa-map-location-dot"></i> Track Order
+                            </a>
+                            <a href="/product/orders/{{ order.id }}/cancel/" class="action-btn btn-cancel">
+                                <i class="fa-solid fa-xmark"></i> Cancel Order
+                            </a>
+                            <a href="/product/orders/{{ order.id }}/return/" class="action-btn btn-return">
+                                <i class="fa-solid fa-rotate-left"></i> Return Order
+                            </a>
                         </div>
                     </div>
                 {% endfor %}

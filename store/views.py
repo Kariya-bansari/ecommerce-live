@@ -252,3 +252,62 @@ def my_orders(request):
         'cart_product_ids': cart_product_ids,
     }
     return render(request, "my_orders.html", context)
+
+
+@login_required
+def track_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    items = order.items.all()
+    # Build product names from adminpanel
+    from adminpanel.models import Product as AdminProduct
+    enriched_items = []
+    for item in items:
+        try:
+            product = AdminProduct.objects.get(id=item.product_id)
+            name = product.Product_Name
+            image = product.ProductImage.url if product.ProductImage else None
+        except AdminProduct.DoesNotExist:
+            name = f"Product #{item.product_id}"
+            image = None
+        enriched_items.append({'item': item, 'name': name, 'image': image})
+
+    context = {
+        'order': order,
+        'enriched_items': enriched_items,
+    }
+    return render(request, "track_order_simple.html", context)
+
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if request.method == 'POST':
+        reason = request.POST.get('reason', 'No reason given')
+        # Store cancellation reason in order note (re-use address field as note)
+        order.address = f"[CANCELLED] Reason: {reason}\n\nOriginal Address: {order.address}"
+        order.save()
+        return render(request, "order_action_success.html", {
+            'action': 'Cancelled',
+            'order': order,
+            'icon': 'fa-times-circle',
+            'color': '#e11d48',
+            'message': 'Your order has been successfully cancelled. Refund (if any) will be processed in 5-7 business days.',
+        })
+    return render(request, "cancel_order_simple.html", {'order': order})
+
+
+@login_required
+def return_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    if request.method == 'POST':
+        reason = request.POST.get('reason', 'No reason given')
+        order.address = f"[RETURN REQUESTED] Reason: {reason}\n\nOriginal Address: {order.address}"
+        order.save()
+        return render(request, "order_action_success.html", {
+            'action': 'Return Requested',
+            'order': order,
+            'icon': 'fa-undo-alt',
+            'color': '#b38b4d',
+            'message': 'Your return request has been submitted. Our team will contact you within 48 hours.',
+        })
+    return render(request, "return_order_simple.html", {'order': order})

@@ -1,0 +1,111 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order | Dhara Enterprise</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold:#b38b4d; --dark:#0f172a; --bg:#fdfcf9; --border:#e2e8f0; --green:#16a34a; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:"Plus Jakarta Sans",sans-serif; }
+        body { background:var(--bg); color:var(--dark); padding-top:100px; padding-bottom:80px; }
+        .container { max-width:700px; margin:0 auto; padding:0 20px; }
+        .back-btn { display:inline-flex; align-items:center; gap:8px; color:var(--dark); text-decoration:none; font-weight:600; background:white; padding:10px 20px; border-radius:12px; border:1px solid var(--border); margin-bottom:30px; transition:.3s; }
+        .back-btn:hover { background:var(--gold); color:white; border-color:var(--gold); }
+        .card { background:white; border-radius:20px; border:1px solid var(--border); padding:28px; margin-bottom:24px; box-shadow:0 4px 20px rgba(0,0,0,0.04); }
+        .card h2 { font-size:1.5rem; margin-bottom:6px; }
+        .card .meta { color:#64748b; font-size:0.95rem; margin-bottom:20px; }
+        .info-row { display:flex; flex-wrap:wrap; gap:12px; }
+        .chip { background:#f8fafc; border-radius:10px; padding:12px 18px; flex:1; min-width:130px; }
+        .chip .lbl { font-size:0.72rem; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+        .chip .val { font-size:1rem; font-weight:700; }
+        .timeline { position:relative; padding-left:34px; margin-top:20px; }
+        .timeline::before { content:""; position:absolute; left:11px; top:0; bottom:0; width:2px; background:#e2e8f0; }
+        .ts { position:relative; margin-bottom:26px; }
+        .ts:last-child { margin-bottom:0; }
+        .dot { position:absolute; left:-28px; top:2px; width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; }
+        .dot.done { background:#dcfce7; color:var(--green); border:2px solid var(--green); }
+        .dot.active { background:#fef3c7; color:var(--gold); border:2px solid var(--gold); }
+        .dot.future { background:#f1f5f9; color:#94a3b8; border:2px solid #e2e8f0; }
+        .ts-title { font-weight:700; font-size:0.95rem; margin-bottom:3px; }
+        .ts-title.done { color:var(--green); }
+        .ts-title.active { color:var(--gold); }
+        .ts-title.future { color:#94a3b8; }
+        .ts-desc { font-size:0.84rem; color:#64748b; }
+        .badge-curr { background:#fef3c7; color:#92400e; font-size:0.68rem; font-weight:700; padding:2px 8px; border-radius:8px; margin-left:8px; }
+        .prow { display:flex; align-items:center; gap:14px; padding:14px; background:#f8fafc; border-radius:12px; margin-bottom:10px; }
+        .prow:last-child { margin-bottom:0; }
+        .pimg { width:52px; height:52px; border-radius:10px; object-fit:cover; border:1px solid var(--border); }
+        .pph { width:52px; height:52px; border-radius:10px; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:1.3rem; }
+        .pinfo { flex:1; }
+        .pname { font-weight:700; margin-bottom:3px; }
+        .pmeta { font-size:0.83rem; color:#64748b; }
+        .pprice { font-weight:800; }
+        @media(max-width:600px) { .info-row { flex-direction:column; } }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="container">
+        <a href="/product/orders/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to My Orders</a>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-map-location-dot" style="color:var(--gold);margin-right:10px;"></i>Tracking Order #{{ order.id }}</h2>
+            <div class="meta"><i class="fa-regular fa-calendar"></i> Placed on {{ order.created_at|date:"d M Y - h:i A" }}</div>
+            <div class="info-row">
+                <div class="chip"><div class="lbl">Customer</div><div class="val">{{ order.full_name }}</div></div>
+                <div class="chip"><div class="lbl">Payment</div><div class="val">{{ order.payment_mode }}</div></div>
+                <div class="chip"><div class="lbl">Total</div><div class="val" style="color:var(--gold);">Rs.{{ order.total_amount|floatformat:2 }}</div></div>
+                <div class="chip"><div class="lbl">Status</div><div class="val" style="color:var(--green);">Confirmed</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size:1.1rem;margin-bottom:4px;"><i class="fa-solid fa-route" style="color:var(--gold);margin-right:8px;"></i> Order Journey</h3>
+            <div class="timeline">
+                <div class="ts">
+                    <div class="dot done"><i class="fa-solid fa-check"></i></div>
+                    <div class="ts-title done">Order Placed</div>
+                    <div class="ts-desc">{{ order.created_at|date:"d M Y, h:i A" }}</div>
+                </div>
+                <div class="ts">
+                    <div class="dot active"><i class="fa-solid fa-box"></i></div>
+                    <div class="ts-title active">Processing <span class="badge-curr">Current</span></div>
+                    <div class="ts-desc">Your order is being packed by our team.</div>
+                </div>
+                <div class="ts">
+                    <div class="dot future"><i class="fa-solid fa-truck"></i></div>
+                    <div class="ts-title future">Shipped</div>
+                    <div class="ts-desc">Will be picked up by our delivery partner.</div>
+                </div>
+                <div class="ts">
+                    <div class="dot future"><i class="fa-solid fa-motorcycle"></i></div>
+                    <div class="ts-title future">Out for Delivery</div>
+                    <div class="ts-desc">Delivery partner heading to your address.</div>
+                </div>
+                <div class="ts">
+                    <div class="dot future"><i class="fa-solid fa-house-circle-check"></i></div>
+                    <div class="ts-title future">Delivered</div>
+                    <div class="ts-desc">Order delivered successfully.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size:1.1rem;margin-bottom:18px;"><i class="fa-solid fa-shopping-bag" style="color:var(--gold);margin-right:8px;"></i> Items in this Order</h3>
+            {% for ei in enriched_items %}
+            <div class="prow">
+                {% if ei.image %}<img src="{{ ei.image }}" class="pimg" alt="{{ ei.name }}">
+                {% else %}<div class="pph"><i class="fa-solid fa-box"></i></div>{% endif %}
+                <div class="pinfo">
+                    <div class="pname">{{ ei.name }}</div>
+                    <div class="pmeta">Qty: {{ ei.item.quantity }} | Rs.{{ ei.item.price|floatformat:2 }} each</div>
+                </div>
+                <div class="pprice">Rs.{{ ei.item.price|floatformat:2 }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

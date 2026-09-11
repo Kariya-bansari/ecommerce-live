@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancel Order | Dhara Enterprise</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --red:#e11d48; --dark:#0f172a; --bg:#fdfcf9; --border:#e2e8f0; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:"Plus Jakarta Sans",sans-serif; }
+        body { background:var(--bg); color:var(--dark); padding-top:100px; padding-bottom:80px; }
+        .container { max-width:600px; margin:0 auto; padding:0 20px; }
+        .back-btn { display:inline-flex; align-items:center; gap:8px; color:var(--dark); text-decoration:none; font-weight:600; background:white; padding:10px 20px; border-radius:12px; border:1px solid var(--border); margin-bottom:30px; transition:.3s; }
+        .back-btn:hover { background:#f1f5f9; }
+        .card { background:white; border-radius:20px; border:1px solid var(--border); padding:32px; box-shadow:0 4px 20px rgba(0,0,0,0.04); }
+        .warn-box { background:#fff5f5; border:2px solid #fecaca; border-radius:14px; padding:18px 20px; margin-bottom:28px; display:flex; gap:14px; align-items:flex-start; }
+        .warn-box i { color:var(--red); font-size:1.4rem; flex-shrink:0; margin-top:2px; }
+        .warn-box p { font-size:14px; line-height:1.6; color:#7f1d1d; }
+        h2 { font-size:1.5rem; margin-bottom:6px; }
+        .meta { color:#64748b; font-size:0.9rem; margin-bottom:28px; }
+        label { display:block; font-size:0.75rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+        .reason-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:22px; }
+        .reason-opt { display:flex; align-items:center; gap:10px; padding:12px 14px; border:2px solid var(--border); border-radius:12px; cursor:pointer; transition:.3s; }
+        .reason-opt:hover { border-color:var(--red); }
+        .reason-opt input { accent-color:var(--red); width:16px; height:16px; }
+        .reason-opt span { font-size:13px; font-weight:600; }
+        textarea { width:100%; padding:14px; border:2px solid var(--border); border-radius:12px; font-size:14px; font-family:inherit; resize:vertical; min-height:100px; outline:none; transition:.3s; margin-bottom:22px; }
+        textarea:focus { border-color:var(--red); }
+        .btn-row { display:flex; gap:14px; }
+        .btn-submit { flex:1; padding:14px; background:var(--red); color:white; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; transition:.3s; display:flex; align-items:center; justify-content:center; gap:8px; }
+        .btn-submit:hover { background:#be123c; transform:translateY(-2px); }
+        .btn-back { flex:1; padding:14px; background:white; color:var(--dark); border:2px solid var(--dark); border-radius:12px; font-size:15px; font-weight:700; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; transition:.3s; }
+        .btn-back:hover { background:#f1f5f9; }
+        @media(max-width:500px) { .reason-grid { grid-template-columns:1fr; } .btn-row { flex-direction:column; } }
+    </style>
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="container">
+        <a href="/product/orders/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to My Orders</a>
+        <div class="card">
+            <h2><i class="fa-solid fa-circle-xmark" style="color:var(--red);margin-right:10px;"></i>Cancel Order #{{ order.id }}</h2>
+            <div class="meta">Placed on {{ order.created_at|date:"d M Y" }} &nbsp;|&nbsp; Total: Rs.{{ order.total_amount|floatformat:2 }}</div>
+
+            <div class="warn-box">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <p>Once cancelled, this action cannot be undone. Refunds (if applicable) will be processed within 5-7 business days to your original payment method.</p>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                <label>Select Reason for Cancellation</label>
+                <div class="reason-grid">
+                    <label class="reason-opt"><input type="radio" name="reason" value="Changed my mind"> <span>Changed my mind</span></label>
+                    <label class="reason-opt"><input type="radio" name="reason" value="Found better price"> <span>Found better price</span></label>
+                    <label class="reason-opt"><input type="radio" name="reason" value="Wrong item ordered"> <span>Wrong item ordered</span></label>
+                    <label class="reason-opt"><input type="radio" name="reason" value="Delivery too late"> <span>Delivery too late</span></label>
+                    <label class="reason-opt"><input type="radio" name="reason" value="Payment issue"> <span>Payment issue</span></label>
+                    <label class="reason-opt"><input type="radio" name="reason" value="Other"> <span>Other</span></label>
+                </div>
+                <label>Additional Comments (optional)</label>
+                <textarea name="extra" placeholder="Tell us more about why you want to cancel..."></textarea>
+                <div class="btn-row">
+                    <a href="/product/orders/" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Keep Order</a>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-xmark"></i> Cancel Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

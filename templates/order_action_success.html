@@ -1,61 +1,38 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} | ElectroMart</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>{{ action }} Successful | Dhara Enterprise</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --gold:#b38b4d; --dark:#1a1c20; --bg:#fdfcf9; }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
-        body { background:var(--bg); padding:100px 5% 60px; color:var(--dark); }
-        .header-nav { position:fixed; top:0; left:0; width:100%; z-index:1000; background:rgba(253,252,249,0.96); backdrop-filter:blur(15px); height:75px; display:flex; align-items:center; padding:0 5%; justify-content:space-between; box-shadow:0 2px 20px rgba(0,0,0,0.06); }
-        .nav-logo-img { height:50px; }
-        .nav-links { display:flex; gap:20px; align-items:center; }
-        .nav-links a { text-decoration:none; color:var(--dark); font-weight:600; font-size:14px; transition:.3s; }
-        .nav-links a:hover { color:var(--gold); }
-        .logout-btn { background:var(--dark)!important; color:#fff!important; padding:9px 22px; border-radius:9px; }
-
-        .wrapper { max-width:500px; margin:auto; text-align:center; padding-top:40px; }
-        .icon-circle {
-            width:100px; height:100px; border-radius:50%;
-            background: {{ color }};
-            display:flex; align-items:center; justify-content:center;
-            margin:0 auto 25px; font-size:2.5rem; color:#fff;
-            box-shadow:0 15px 35px rgba(0,0,0,0.2);
-            animation:popIn .6s cubic-bezier(0.175,0.885,0.32,1.275);
-        }
-        @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-        h1 { font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:12px; }
-        p { color:#6b7280; font-size:15px; line-height:1.7; margin-bottom:35px; }
-        .btn-primary { display:inline-flex; align-items:center; gap:8px; padding:13px 30px; background:var(--gold); color:#fff; text-decoration:none; border-radius:12px; font-weight:700; transition:.3s; margin:5px; }
-        .btn-primary:hover { background:#9c7437; transform:translateY(-2px); }
-        .btn-secondary { display:inline-flex; align-items:center; gap:8px; padding:13px 30px; background:#fff; color:var(--dark); text-decoration:none; border-radius:12px; font-weight:700; border:2px solid var(--dark); transition:.3s; margin:5px; }
-        .btn-secondary:hover { background:var(--dark); color:#fff; }
-        .order-ref { display:inline-block; background:#f5f5f5; padding:8px 20px; border-radius:10px; font-size:13px; font-weight:700; color:var(--dark); margin-bottom:25px; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:"Plus Jakarta Sans",sans-serif; }
+        body { background:#fdfcf9; color:#0f172a; padding-top:100px; padding-bottom:80px; display:flex; align-items:flex-start; justify-content:center; }
+        .card { background:white; border-radius:24px; border:1px solid #e2e8f0; padding:50px 40px; max-width:500px; width:90%; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.06); }
+        .icon { font-size:4rem; margin-bottom:20px; }
+        h2 { font-size:1.8rem; margin-bottom:12px; }
+        p { color:#64748b; font-size:1rem; line-height:1.6; margin-bottom:32px; }
+        .order-badge { background:#f8fafc; border-radius:12px; padding:14px; margin-bottom:32px; font-size:0.9rem; color:#64748b; }
+        .order-badge strong { color:#0f172a; font-size:1.05rem; }
+        .btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; border-radius:12px; font-size:15px; font-weight:700; text-decoration:none; transition:.3s; margin:6px; }
+        .btn-primary { background:#0f172a; color:white; }
+        .btn-primary:hover { background:#1e293b; transform:translateY(-2px); }
+        .btn-shop { background:#f97316; color:white; }
+        .btn-shop:hover { background:#ea6c0a; transform:translateY(-2px); }
     </style>
 </head>
 <body>
-<nav class="header-nav">
-    <a href="/"><img src="/static/logo.jpeg" class="nav-logo-img" alt="Logo"></a>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/product/" style="color:var(--gold)">Products</a>
-        <a href="/product/my-orders/" style="color:var(--gold)">My Orders</a>
-        <a href="/logout/" class="logout-btn">Logout</a>
+    {% include "header.html" %}
+    <div class="card">
+        <div class="icon"><i class="fa-solid {{ icon }}" style="color:{{ color }};"></i></div>
+        <h2>{{ action }} Successful!</h2>
+        <p>{{ message }}</p>
+        <div class="order-badge">Order <strong>#{{ order.id }}</strong> has been {{ action|lower }}.</div>
+        <div>
+            <a href="/product/orders/" class="btn btn-primary"><i class="fa-solid fa-list"></i> My Orders</a>
+            <a href="/product/" class="btn btn-shop"><i class="fa-solid fa-bag-shopping"></i> Shop More</a>
+        </div>
     </div>
-</nav>
-
-<div class="wrapper">
-    <div class="icon-circle" style="background:{{ color }};"><i class="fas fa-{{ icon }}"></i></div>
-    <h1>{{ title }}</h1>
-    <div class="order-ref">Order #{{ order.id }}</div>
-    <p>{{ message }}</p>
-    <div>
-        <a href="/product/my-orders/" class="btn-primary"><i class="fas fa-list"></i> My Orders</a>
-        <a href="/product/" class="btn-secondary"><i class="fas fa-shopping-bag"></i> Continue Shopping</a>
-    </div>
-</div>
 </body>
 </html>

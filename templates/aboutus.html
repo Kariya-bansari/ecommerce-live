@@ -270,25 +270,7 @@
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="/" class="logo-link">
-        <img src="{% static 'logo.jpeg' %}" class="nav-logo-img" alt="Dhara Enterprise">
-    </a>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="{% url 'about1' %}" style="color: var(--primary);">About Us</a>
-        <a href="/product/">Products</a>
-        <a href="/contact/">Contact</a>
-        <a href="/feedback/">Feedback</a>
-
-        {% if user.is_authenticated %}
-            <a href="/profile/" class="login-btn">{{ user.username }}</a>
-            <a href="/logout/" class="login-btn">Logout</a>
-        {% else %}
-            <a href="/login/" class="login-btn">Login</a>
-        {% endif %}
-    </div>
-</nav>
+{% include "header.html" %}
 
 <section class="about-hero">
     <span>Get to know us</span>

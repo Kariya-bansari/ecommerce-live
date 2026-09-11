@@ -1,0 +1,120 @@
+<!-- Unified Header -->
+<style>
+    .header-nav {
+        position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+        background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(0,0,0,0.05); height: 80px;
+        display: flex; align-items: center; padding: 0 8%; justify-content: space-between;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .logo-link { text-decoration: none; display: flex; align-items: center; }
+    .nav-logo-img { height: 55px; transition: transform 0.4s ease; }
+    .nav-logo-img:hover { transform: scale(1.07) rotate(-2deg); }
+
+    .nav-links { display: flex; gap: 22px; align-items: center; }
+    .nav-links a {
+        text-decoration: none; color: #1e293b; font-size: 14px;
+        font-weight: 600; position: relative; transition: color 0.25s;
+    }
+    .nav-links a:not(.nav-icon-link, .login-btn)::after {
+        content: ''; position: absolute; left: 0; bottom: -4px;
+        width: 0; height: 2px; background: #f97316; border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+    .nav-links a:not(.nav-icon-link, .login-btn):hover::after, .nav-links a.active::after { width: 100%; }
+    .nav-links a:hover, .nav-links a.active { color: #f97316; }
+
+    .nav-icon-link {
+        position: relative; color: #1e293b; font-size: 1.15rem;
+        width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+        border-radius: 10px; transition: 0.3s;
+    }
+    .nav-icon-link:hover { color: #f97316; }
+    
+    .badge {
+        position: absolute; top: -2px; right: -2px;
+        background: #e11d48; color: white;
+        font-size: 10px; font-weight: 800; min-width: 17px; height: 17px;
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        border: 2px solid white;
+    }
+
+    .login-btn {
+        background: #0f172a !important; color: #fff !important;
+        padding: 9px 22px; border-radius: 10px; font-weight: 700 !important;
+        transition: background 0.3s, transform 0.3s !important;
+    }
+    .login-btn:hover { background: #f97316 !important; transform: translateY(-2px) !important; }
+    .login-btn::after { display: none !important; }
+
+    .menu-btn { display: none; }
+    @media (max-width: 950px) {
+        .menu-btn { display: block !important; font-size: 24px; cursor: pointer; color: #1e293b; }
+        .nav-links {
+            position: absolute; top: 80px; left: -100%; width: 100%;
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px);
+            flex-direction: column; padding: 20px 0; gap: 15px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1); transition: 0.4s ease-in-out;
+        }
+        .nav-links.active { left: 0; }
+        .nav-links a:not(.nav-icon-link, .login-btn) { display: block; font-size: 1.1rem; }
+        .header-nav { padding: 0 5%; }
+        .nav-logo-img { height: 45px; }
+    }
+</style>
+
+<nav class="header-nav">
+    <a href="/" class="logo-link">
+        <img src="/static/logo.jpeg" alt="Dhara Enterprise" class="nav-logo-img">
+    </a>
+    <i class="fa-solid fa-bars menu-btn" id="menu-btn"></i>
+    <div class="nav-links" id="nav-links">
+        <a href="/">Home</a>
+        <a href="/about1/">About Us</a>
+        <a href="/product/">Products</a>
+        <a href="/gallery/">Gallery</a>
+        <a href="/contact/">Contact</a>
+        <a href="/feedback/">Feedback</a>
+
+        <a href="/product/wishlist/" class="nav-icon-link" title="Wishlist">
+            <i class="fa-regular fa-heart"></i>
+            <span class="badge" id="wishlist-count">{% if wishlist_product_ids %}{{ wishlist_product_ids|length }}{% else %}0{% endif %}</span>
+        </a>
+        <a href="/product/cart/" class="nav-icon-link" title="Cart">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="badge" id="cart-count">{% if cart_product_ids %}{{ cart_product_ids|length }}{% else %}0{% endif %}</span>
+        </a>
+
+        {% if request.user.is_authenticated %}
+            <a href="/profile/" class="nav-icon-link" title="My Profile"><i class="fa-regular fa-user"></i></a>
+            <a href="/logout/" class="login-btn">Logout</a>
+        {% else %}
+            <a href="/register/" style="color:#f97316; border:2px solid #f97316; padding:7px 16px; border-radius:10px; font-weight:700;">Register</a>
+            <a href="/login/" class="login-btn">Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const menuBtn = document.getElementById('menu-btn');
+        if (menuBtn) {
+            menuBtn.addEventListener('click', function() {
+                document.getElementById('nav-links').classList.toggle('active');
+                this.classList.toggle('fa-bars');
+                this.classList.toggle('fa-xmark');
+            });
+        }
+        
+        // Highlight active link
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav-links a:not(.nav-icon-link, .login-btn)').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            } else if (currentPath === '' && link.getAttribute('href') === '/') {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+<!-- End Unified Header -->

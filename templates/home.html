@@ -311,31 +311,7 @@
     </div>
 </div>
 
-<nav class="header-nav">
-    <a href="/" class="logo-link">
-        <img src="static/logo.jpeg" alt="Dhara Enterprise" class="nav-logo-img">
-    </a>
-    <i class="fa-solid fa-bars menu-btn" id="menu-btn"></i>
-    <div class="nav-links" id="nav-links">
-        <a href="/" class="active">Home</a>
-        <a href="/about1/">About Us</a>
-        <a href="/product/">Products</a>
-        <a href="/gallery/">Gallery</a>
-        <a href="{% url 'contact' %}">Contact</a>
-        <a href="/feedback/">Feedback</a>
-
-        <a href="/wishlist/" class="nav-icon-link" title="Wishlist"><i class="fa-regular fa-heart"></i><span class="badge" id="wishlist-count">0</span></a>
-        <a href="/cart/" class="nav-icon-link" title="Cart"><i class="fa-solid fa-cart-shopping"></i><span class="badge" id="cart-count">0</span></a>
-
-        {% if request.user.is_authenticated %}
-            <a href="/profile/" class="nav-icon-link" title="My Profile"><i class="fa-regular fa-user"></i></a>
-            <a href="/logout/" class="login-btn">Logout</a>
-        {% else %}
-            <a href="{% url 'register' %}" style="color:var(--primary);border:2px solid var(--primary);padding:8px 18px;border-radius:10px;font-weight:700;">Register</a>
-            <a href="/login/" class="login-btn">Login</a>
-        {% endif %}
-    </div>
-</nav>
+{% include "header.html" %}
 
 <section class="hero">
     <div class="slider-container">
@@ -443,11 +419,7 @@
         if(alert) alert.classList.remove('show-alert');
     }
 
-    document.getElementById('menu-btn').addEventListener('click', function() {
-        document.getElementById('nav-links').classList.toggle('active');
-        this.classList.toggle('fa-bars');
-        this.classList.toggle('fa-xmark');
-    });
+    
 </script>
 
 </body>

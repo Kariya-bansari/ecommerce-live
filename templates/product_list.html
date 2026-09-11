@@ -166,33 +166,7 @@
 
 <div class="toast" id="toast"></div>
 
-<nav class="header-nav">
-    <a href="/" class="logo-link">
-        <img src="/static/logo.jpeg" alt="Dhara Enterprise" class="nav-logo-img">
-    </a>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/about1/">About Us</a>
-        <a href="/product/" style="color:var(--accent-gold);">Products</a>
-        <a href="/gallery/">Gallery</a>
-        <a href="/contact/">Contact</a>
-        <a href="/feedback/">Feedback</a>
-        <a href="/profile/" class="nav-icon-link" title="My Profile"><i class="fa-regular fa-user"></i></a>
-        <a href="/product/wishlist/" class="nav-icon-link" title="Wishlist">
-            <i class="fa-regular fa-heart"></i>
-            <span class="badge" id="wishlist-count">{{ wishlist_product_ids|length }}</span>
-        </a>
-        <a href="/product/cart/" class="nav-icon-link" title="Cart">
-            <i class="fa-solid fa-cart-shopping"></i>
-            <span class="badge" id="cart-count">{{ cart_product_ids|length }}</span>
-        </a>
-        {% if request.user.is_authenticated %}
-            <a href="/logout/" class="login-btn">Logout</a>
-        {% else %}
-            <a href="/login/?next=/product/" class="login-btn">Login Now</a>
-        {% endif %}
-    </div>
-</nav>
+{% include "header.html" %}
 
 <div class="container">
     <div class="offer-slider">

@@ -76,16 +76,7 @@
 <body>
 <div class="toast" id="toast"></div>
 
-<nav class="header-nav">
-    <a href="/"><img src="/static/logo.jpeg" class="nav-logo-img" alt="Logo"></a>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/product/" style="color:var(--gold)">Products</a>
-        <a href="/product/wishlist/"><i class="fa-regular fa-heart"></i></a>
-        <a href="/product/cart/" style="color:var(--gold)"><i class="fa-solid fa-cart-shopping"></i></a>
-        <a href="/logout/" class="logout-btn">Logout</a>
-    </div>
-</nav>
+{% include "header.html" %}
 
 <div class="page-header">
     <span>Your Selection</span>

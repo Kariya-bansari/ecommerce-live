@@ -148,12 +148,7 @@
 </head>
 <body>
 
-<nav class="header-nav">
-    <a href="/"><img src="{% static 'logo.jpeg' %}" class="nav-logo-img"></a>
-    <div style="font-weight: 700; color: var(--primary);">
-        Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
-    </div>
-</nav>
+{% include "header.html" %}
 
 <div class="main-wrapper">
     <div class="profile-header">

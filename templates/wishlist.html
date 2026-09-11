@@ -57,21 +57,7 @@
 <body>
 <div class="toast" id="toast"></div>
 
-<nav class="header-nav">
-    <a href="/" class="logo-link"><img src="/static/logo.jpeg" class="nav-logo-img" alt="Logo"></a>
-    <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/product/" style="color:var(--gold)">Products</a>
-        <a href="/product/wishlist/" class="nav-icon">
-            <i class="fa-regular fa-heart"></i>
-            <span class="badge">{{ wishlist_items|length }}</span>
-        </a>
-        <a href="/product/cart/" class="nav-icon">
-            <i class="fa-solid fa-cart-shopping"></i>
-        </a>
-        <a href="/logout/" class="logout-btn">Logout</a>
-    </div>
-</nav>
+{% include "header.html" %}
 
 <div class="page-header">
     <span>Your Favourites</span>

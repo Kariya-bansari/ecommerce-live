@@ -22,4 +22,5 @@ urlpatterns = [
     # Order pages
     path('order/<int:id>/', views.order_form, name='order_form'),
     path('place-order/', views.place_order, name='place_order'),
+    path('orders/', views.my_orders, name='my_orders'),
 ]

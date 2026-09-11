@@ -236,3 +236,19 @@ def place_order(request):
     order.save()
     cart_items.delete()
     return render(request, "order_success.html", {"order": order})
+
+
+@login_required
+def my_orders(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    
+    # We also need to fetch wishlist/cart counts for the header to render correctly
+    wishlist_product_ids = Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True) if request.user.is_authenticated else []
+    cart_product_ids = Cart.objects.filter(user=request.user).values_list('product_id', flat=True) if request.user.is_authenticated else []
+
+    context = {
+        'orders': orders,
+        'wishlist_product_ids': wishlist_product_ids,
+        'cart_product_ids': cart_product_ids,
+    }
+    return render(request, "my_orders.html", context)

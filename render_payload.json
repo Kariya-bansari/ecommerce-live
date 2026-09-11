@@ -1,0 +1,22 @@
+{
+  "type": "web_service",
+  "name": "ecommerce-live",
+  "ownerId": "tea-dah9irbl550s73e5r8s0",
+  "repo": "https://github.com/Kariya-bansari/ecommerce-live",
+  "autoDeploy": "yes",
+  "branch": "main",
+  "serviceDetails": {
+    "env": "python",
+    "plan": "free",
+    "envSpecificDetails": {
+      "buildCommand": "./build.sh",
+      "startCommand": "gunicorn ecommerce.wsgi:application"
+    },
+    "envVars": [
+      {
+        "key": "DATABASE_URL",
+        "value": "postgresql://ecomdb_2rf7_user:GdAo0bDtOasuAstEGi6wPYjqCCHh6c6C@dpg-dah9jke1egvs73d5u8gg-a/ecomdb_2rf7"
+      }
+    ]
+  }
+}

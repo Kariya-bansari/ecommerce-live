@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Placed | ElectroMart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --gold:#b38b4d; --dark:#1a1c20; --bg:#fdfcf9; --green:#15803d; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
+        body { background:var(--bg); padding:100px 5% 60px; color:var(--dark); }
+        .header-nav {
+            position:fixed; top:0; left:0; width:100%; z-index:1000;
+            background:rgba(253,252,249,0.96); backdrop-filter:blur(15px);
+            height:75px; display:flex; align-items:center; padding:0 5%;
+            justify-content:space-between; box-shadow:0 2px 20px rgba(0,0,0,0.06);
+        }
+        .nav-logo-img { height:50px; }
+        .nav-links { display:flex; gap:20px; align-items:center; }
+        .nav-links a { text-decoration:none; color:var(--dark); font-weight:600; font-size:14px; transition:.3s; }
+        .nav-links a:hover { color:var(--gold); }
+        .logout-btn { background:var(--dark)!important; color:#fff!important; padding:9px 22px; border-radius:9px; }
+
+        .success-wrapper { max-width:650px; margin:auto; text-align:center; }
+
+        .check-circle {
+            width:100px; height:100px; background:linear-gradient(135deg,#15803d,#22c55e);
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            margin:0 auto 30px; font-size:2.5rem; color:#fff;
+            box-shadow:0 15px 35px rgba(21,128,61,0.3);
+            animation: popIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        @keyframes popIn { from{transform:scale(0);opacity:0;} to{transform:scale(1);opacity:1;} }
+
+        h1 { font-family:'Playfair Display',serif; font-size:2.5rem; margin-bottom:10px; color:var(--dark); }
+        .subtitle { color:#6b7280; font-size:16px; margin-bottom:40px; }
+
+        .order-card { background:#fff; border-radius:20px; padding:30px; box-shadow:0 8px 30px rgba(0,0,0,0.06); text-align:left; margin-bottom:30px; }
+        .order-card-title { font-family:'Playfair Display',serif; font-size:1.2rem; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #f0f0f0; }
+        .detail-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f9f9f9; font-size:14px; }
+        .detail-row:last-child { border-bottom:none; }
+        .detail-label { color:#6b7280; font-weight:600; }
+        .detail-value { font-weight:700; }
+        .detail-value.gold { color:var(--gold); }
+        .detail-value.green { color:var(--green); }
+
+        .order-id-badge {
+            display:inline-block; background:rgba(179,139,77,0.1); color:var(--gold);
+            padding:4px 14px; border-radius:20px; font-weight:800; font-size:13px;
+        }
+
+        .action-buttons { display:flex; gap:15px; justify-content:center; flex-wrap:wrap; }
+        .btn-primary {
+            padding:14px 35px; background:var(--gold); color:#fff;
+            text-decoration:none; border-radius:12px; font-weight:700; font-size:15px;
+            transition:.3s; display:inline-flex; align-items:center; gap:8px;
+        }
+        .btn-primary:hover { background:#9c7437; transform:translateY(-2px); }
+        .btn-secondary {
+            padding:14px 35px; background:#fff; color:var(--dark);
+            text-decoration:none; border-radius:12px; font-weight:700; font-size:15px;
+            border:2px solid var(--dark); transition:.3s; display:inline-flex; align-items:center; gap:8px;
+        }
+        .btn-secondary:hover { background:var(--dark); color:#fff; transform:translateY(-2px); }
+    </style>
+</head>
+<body>
+
+<nav class="header-nav">
+    <a href="/"><img src="/static/logo.jpeg" class="nav-logo-img" alt="Logo"></a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/product/" style="color:var(--gold)">Products</a>
+        <a href="/product/cart/"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a href="/logout/" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="success-wrapper">
+    <div class="check-circle"><i class="fas fa-check"></i></div>
+    <h1>Order Placed!</h1>
+    <p class="subtitle">Thank you for your purchase. Your order has been received and is being processed.</p>
+
+    <div class="order-card">
+        <div class="order-card-title"><i class="fas fa-receipt" style="color:var(--gold);margin-right:8px;"></i>Order Details</div>
+        <div class="detail-row">
+            <span class="detail-label">Order ID</span>
+            <span class="detail-value"><span class="order-id-badge">#{{ order.id }}</span></span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Customer Name</span>
+            <span class="detail-value">{{ order.full_name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Email</span>
+            <span class="detail-value">{{ order.email }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Phone</span>
+            <span class="detail-value">{{ order.phone }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Delivery Address</span>
+            <span class="detail-value" style="text-align:right;max-width:60%;">{{ order.address }}, {{ order.city }} - {{ order.pincode }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Payment Method</span>
+            <span class="detail-value gold">{{ order.get_payment_mode_display }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Order Date</span>
+            <span class="detail-value">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Total Amount</span>
+            <span class="detail-value green" style="font-size:1.2rem;">₹ {{ order.total_amount }}</span>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/product/" class="btn-primary"><i class="fas fa-shopping-bag"></i> Continue Shopping</a>
+        <a href="/" class="btn-secondary"><i class="fas fa-home"></i> Go Home</a>
+    </div>
+</div>
+
+</body>
+</html>

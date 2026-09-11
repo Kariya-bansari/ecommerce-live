@@ -1,0 +1,8 @@
+{
+  "serviceDetails": {
+    "envSpecificDetails": {
+      "buildCommand": "pip install -r requirements.txt && python manage.py collectstatic --no-input",
+      "startCommand": "python manage.py migrate && gunicorn ecommerce.wsgi:application"
+    }
+  }
+}

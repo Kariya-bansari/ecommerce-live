@@ -1,0 +1,7 @@
+{
+  "serviceDetails": {
+    "envSpecificDetails": {
+      "startCommand": "pg_restore -O -x -c -d $DATABASE_URL electronicshop8.backup ; gunicorn ecommerce.wsgi:application --bind 0.0.0.0:$PORT"
+    }
+  }
+}

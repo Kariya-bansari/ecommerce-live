@@ -216,14 +216,33 @@ table.dataTable tbody tr.crit-stock td{background:#fff5f5!important;}
 }
 .modal-ico{font-size:2.4rem;color:var(--err);margin-bottom:12px;}
 .modal-t{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:7px;}
-.modal-s{color:var(--sub);font-size:.84rem;margin-bottom:22px;line-height:1.6;}
 .modal-acts{display:flex;gap:10px;justify-content:center;}
 
+.mob-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; color: var(--txt); cursor: pointer; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9998; }
+
 @media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;padding:16px;}.charts-row{grid-template-columns:1fr;}}
+@media(max-width:768px){
+  .sidebar { 
+    transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    position: fixed; z-index: 9999; display: flex !important; width: 280px; left: 0; top: 0; bottom: 0;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.active { display: block; }
+  .mob-menu-btn { display: block; margin-right: 15px; }
+  .topbar-left { display: flex; align-items: center; }
+  .main { margin-left: 0; padding: 16px; }
+  .charts-row { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .page-h { font-size: 1.3rem; }
+  .admin-pill { font-size: 0.8rem; padding: 6px 12px; }
+}
 </style>
 </head>
 <body>
+
+<!-- OVERLAY -->
+<div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -303,9 +322,12 @@ table.dataTable tbody tr.crit-stock td{background:#fff5f5!important;}
 <!-- MAIN -->
 <main class="main">
   <div class="topbar">
-    <div>
-      <p class="page-sub">dharaenterprise Admin</p>
-      <h1 class="page-h" id="pageTitle">Dashboard <span>Overview</span></h1>
+    <div class="topbar-left">
+      <button class="mob-menu-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+      <div>
+        <p class="page-sub">dharaenterprise Admin</p>
+        <h1 class="page-h" id="pageTitle">Dashboard <span>Overview</span></h1>
+      </div>
     </div>
     <div class="admin-pill">
       <div class="green-dot"></div>
@@ -483,33 +505,51 @@ table.dataTable tbody tr.crit-stock td{background:#fff5f5!important;}
     </div>
   </section>
 
-  <!-- ═══ VIEW: ALL ORDERS ═══ -->
+  <!-- ✅ VIEW: ALL ORDERS -->
   <section id="view-allOrders" class="view">
     <div class="card">
-      <div class="card-hd"><span class="card-title">Global Order Registry</span></div>
+      <div class="card-hd"><span class="card-title">All Customer Orders</span> <span class="card-pill">Live Data</span></div>
       <div class="tbl-wrap">
         <table id="ordersTable" class="dataTable" style="width:100%">
-          <thead><tr><th>Order ID</th><th>Customer</th><th>Email</th><th>Product</th><th>Qty</th><th>Payment</th><th>Date</th><th>Status</th></tr></thead>
+          <thead><tr><th>Order ID</th><th>Customer</th><th>Email</th><th>Phone</th><th>Amount</th><th>Payment</th><th>Date</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>#ORD-001</td><td>Rahul Sharma</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef9d8e879a83af8b8a8280c18c8082">[email&#160;protected]</a></td><td>MacBook Air M2</td><td>1</td><td>UPI</td><td>2024-05-12</td><td><span class="badge b-ok">Delivered</span></td></tr>
-            <tr><td>#ORD-002</td><td>Priya Patel</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9eeeecf7e7ffdefafbf3f1b0fdf1f3">[email&#160;protected]</a></td><td>iPhone 15 Pro</td><td>2</td><td>Card</td><td>2024-05-14</td><td><span class="badge b-info">Processing</span></td></tr>
-            <tr><td>#ORD-003</td><td>Amit Kumar</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e485898d90a48081898bca878b89">[email&#160;protected]</a></td><td>Sony Headphones</td><td>3</td><td>COD</td><td>2024-05-15</td><td><span class="badge b-warn">Pending</span></td></tr>
+            {% for order in all_orders %}
+            <tr>
+              <td>#{{ order.id }}</td>
+              <td>{{ order.full_name }}</td>
+              <td>{{ order.email }}</td>
+              <td>{{ order.phone }}</td>
+              <td>₹{{ order.total_amount|floatformat:2 }}</td>
+              <td>{{ order.payment_mode }}</td>
+              <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+              <td><span class="badge b-ok">Confirmed</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:30px;">No orders yet</td></tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- ═══ VIEW: WISHLIST ═══ -->
+  <!-- ✅ VIEW: WISHLIST -->
   <section id="view-wishlist" class="view">
     <div class="card">
-      <div class="card-hd"><span class="card-title">Customer Wishlists</span></div>
+      <div class="card-hd"><span class="card-title">Customer Wishlists</span> <span class="card-pill">Live Data</span></div>
       <div class="tbl-wrap">
         <table id="wishTable" class="dataTable" style="width:100%">
-          <thead><tr><th>Product</th><th>User</th><th>Price</th><th>Availability</th></tr></thead>
+          <thead><tr><th>Product</th><th>User</th><th>Price</th></tr></thead>
           <tbody>
-            <tr><td>iPhone 15 Pro</td><td>Anita Rao</td><td>₹1,24,000</td><td><span class="badge b-ok">In Stock</span></td></tr>
-            <tr><td>Sony WH-1000XM5</td><td>Vikram S</td><td>₹32,000</td><td><span class="badge b-err">Out of Stock</span></td></tr>
+            {% for w in wishlist_items %}
+            <tr>
+              <td>{{ w.product_name }}</td>
+              <td>{{ w.user.username }}</td>
+              <td>₹{{ w.product_price }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" style="text-align:center;color:#94a3b8;padding:30px;">No wishlist items</td></tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -565,17 +605,25 @@ table.dataTable tbody tr.crit-stock td{background:#fff5f5!important;}
     </div>
   </section>
 
-  <!-- ═══ VIEW: CUSTOMERS ═══ -->
+  <!-- ✅ VIEW: CUSTOMERS -->
   <section id="view-customers" class="view">
     <div class="card">
-      <div class="card-hd"><span class="card-title">Customer Database</span></div>
+      <div class="card-hd"><span class="card-title">Customer Database</span> <span class="card-pill">Live Data</span></div>
       <div class="tbl-wrap">
         <table id="custTable" class="dataTable" style="width:100%">
-          <thead><tr><th>Name</th><th>Email</th><th>Total Spent</th><th>Orders</th><th>Joined</th><th>Status</th></tr></thead>
+          <thead><tr><th>Username</th><th>Email</th><th>Name</th><th>Joined</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>Amit Kumar</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46272b2f3206212b272f2a6825292b">[email&#160;protected]</a></td><td>₹88,000</td><td>5</td><td>2023-12-10</td><td><span class="badge b-ok">Active</span></td></tr>
-            <tr><td>Priya Patel</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85f5f7ecfce4c5e2e8e4ece9abe6eae8">[email&#160;protected]</a></td><td>₹45,000</td><td>3</td><td>2024-01-05</td><td><span class="badge b-ok">Active</span></td></tr>
-            <tr><td>Rahul Singh</td><td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f6d7e776a735f78727e7673317c7072">[email&#160;protected]</a></td><td>₹12,000</td><td>1</td><td>2024-03-20</td><td><span class="badge b-warn">Inactive</span></td></tr>
+            {% for u in all_users %}
+            <tr>
+              <td>{{ u.username }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.first_name }} {{ u.last_name }}</td>
+              <td>{{ u.date_joined|date:"d M Y" }}</td>
+              <td><span class="badge b-ok">Active</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:30px;">No customers yet</td></tr>
+            {% endfor %}
           </tbody>
         </table>
       </div>
@@ -650,6 +698,16 @@ table.dataTable tbody tr.crit-stock td{background:#fff5f5!important;}
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+// --- Mobile Sidebar Toggle ---
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+  }
+}
+
 // ── VIEW TITLES ──────────────────────────────────────────
 const TITLES={
   dashboard:['Dashboard','Overview'],allProducts:['Products','Inventory'],

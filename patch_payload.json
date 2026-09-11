@@ -1,0 +1,5 @@
+{
+  "serviceDetails": {
+    "buildCommand": "bash build.sh"
+  }
+}

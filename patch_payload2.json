@@ -1,0 +1,14 @@
+{
+  "serviceDetails": {
+    "envVars": [
+      {
+        "key": "DATABASE_URL",
+        "value": "postgresql://ecomdb_2rf7_user:GdAo0bDtOasuAstEGi6wPYjqCCHh6c6C@dpg-dah9jke1egvs73d5u8gg-a/ecomdb_2rf7"
+      },
+      {
+        "key": "PYTHON_VERSION",
+        "value": "3.10.0"
+      }
+    ]
+  }
+}

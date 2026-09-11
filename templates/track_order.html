@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order #{{ order.id }} | ElectroMart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --gold:#b38b4d; --dark:#1a1c20; --bg:#fdfcf9; --green:#15803d; --muted:#6b7280; --red:#e11d48; }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; }
+        body { background:var(--bg); padding:100px 5% 60px; color:var(--dark); }
+
+        .header-nav { position:fixed; top:0; left:0; width:100%; z-index:1000; background:rgba(253,252,249,0.96); backdrop-filter:blur(15px); height:75px; display:flex; align-items:center; padding:0 5%; justify-content:space-between; box-shadow:0 2px 20px rgba(0,0,0,0.06); }
+        .nav-logo-img { height:50px; }
+        .nav-links { display:flex; gap:20px; align-items:center; }
+        .nav-links a { text-decoration:none; color:var(--dark); font-weight:600; font-size:14px; transition:.3s; }
+        .nav-links a:hover { color:var(--gold); }
+        .logout-btn { background:var(--dark)!important; color:#fff!important; padding:9px 22px; border-radius:9px; }
+
+        .page-header { text-align:center; margin-bottom:40px; }
+        .page-header span { letter-spacing:5px; font-size:11px; color:var(--gold); font-weight:700; text-transform:uppercase; }
+        .page-header h1 { font-family:'Playfair Display',serif; font-size:2.8rem; margin-top:8px; }
+
+        .track-wrapper { max-width:780px; margin:auto; }
+
+        /* ── Info Card ── */
+        .info-card {
+            background:#fff; border-radius:20px; padding:25px 30px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.06); margin-bottom:28px;
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:20px;
+        }
+        .info-group label { font-size:10px; font-weight:800; color:var(--muted); text-transform:uppercase; letter-spacing:1.5px; display:block; margin-bottom:5px; }
+        .info-group p { font-size:15px; font-weight:700; }
+        .status-pill { display:inline-block; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:800; }
+        .s-PROCESSING       { background:#fef9c3; color:#854d0e; }
+        .s-CONFIRMED        { background:#dbeafe; color:#1e40af; }
+        .s-SHIPPED          { background:#ede9fe; color:#5b21b6; }
+        .s-OUT_FOR_DELIVERY { background:#ffedd5; color:#9a3412; }
+        .s-DELIVERED        { background:#dcfce7; color:#14532d; }
+        .s-CANCELLED        { background:#fee2e2; color:#991b1b; }
+        .s-RETURNED         { background:#f0f0f0; color:#374151; }
+
+        /* ── Delivery Countdown ── */
+        .delivery-banner {
+            background:linear-gradient(135deg,var(--dark),#30343f);
+            border-radius:18px; padding:22px 28px; margin-bottom:28px;
+            display:flex; align-items:center; justify-content:space-between;
+            color:#fff; gap:20px; flex-wrap:wrap;
+        }
+        .delivery-banner .db-label { font-size:12px; opacity:.7; text-transform:uppercase; letter-spacing:2px; margin-bottom:6px; }
+        .delivery-banner .db-date  { font-family:'Playfair Display',serif; font-size:1.4rem; }
+        .countdown-boxes { display:flex; gap:10px; }
+        .cbox { background:rgba(255,255,255,0.1); border-radius:10px; padding:10px 14px; text-align:center; min-width:58px; }
+        .cbox .num { font-size:1.5rem; font-weight:800; line-height:1; }
+        .cbox .lbl { font-size:10px; opacity:.6; text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+
+        /* ── Timeline ── */
+        .timeline-card {
+            background:#fff; border-radius:20px; padding:35px 40px;
+            box-shadow:0 4px 20px rgba(0,0,0,0.06); margin-bottom:25px;
+        }
+        .timeline-title { font-family:'Playfair Display',serif; font-size:1.3rem; margin-bottom:35px; padding-bottom:15px; border-bottom:2px solid #f0f0f0; }
+
+        .timeline { position:relative; padding-left:70px; }
+        .timeline::before { content:''; position:absolute; left:26px; top:10px; bottom:10px; width:3px; background:#e5e7eb; border-radius:3px; }
+
+        .timeline-step { position:relative; margin-bottom:38px; }
+        .timeline-step:last-child { margin-bottom:0; }
+
+        /* Progress fill on the line */
+        .timeline-progress {
+            position:absolute; left:26px; top:10px; width:3px;
+            background:linear-gradient(to bottom, var(--green), #22c55e);
+            border-radius:3px; transition:height 1s ease;
+        }
+
+        .step-icon {
+            position:absolute; left:-70px; width:52px; height:52px;
+            border-radius:50%; display:flex; align-items:center; justify-content:center;
+            font-size:1.2rem; z-index:1; transition:all .4s ease;
+        }
+        .step-icon.done   { background:var(--green); color:#fff; border:3px solid var(--green); box-shadow:0 0 0 5px rgba(21,128,61,.15); }
+        .step-icon.active { background:var(--gold);  color:#fff; border:3px solid var(--gold);  box-shadow:0 0 0 6px rgba(179,139,77,.2); animation:pulse 2s infinite; }
+        .step-icon.future { background:#f5f5f5; color:#d1d5db; border:3px solid #e5e7eb; }
+
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 6px rgba(179,139,77,.2)} 50%{box-shadow:0 0 0 12px rgba(179,139,77,.06)} }
+
+        .step-body { padding-top:6px; }
+        .step-name { font-size:16px; font-weight:800; }
+        .step-name.done   { color:var(--green); }
+        .step-name.active { color:var(--gold); }
+        .step-name.future { color:#d1d5db; }
+
+        .step-desc { font-size:13px; color:var(--muted); margin-top:4px; }
+        .step-desc.future { color:#e5e7eb; }
+
+        /* Actual / Scheduled time chips */
+        .step-time-chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+        .time-chip {
+            display:inline-flex; align-items:center; gap:5px;
+            padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700;
+        }
+        .chip-done      { background:#dcfce7; color:#14532d; }
+        .chip-scheduled { background:#fef9c3; color:#854d0e; }
+        .chip-future    { background:#f0f0f0; color:#9ca3af; }
+        .chip-active    { background:rgba(179,139,77,.15); color:var(--gold); }
+
+        /* Special states */
+        .special-box { text-align:center; padding:40px 20px; }
+        .special-box i { font-size:3.5rem; margin-bottom:15px; display:block; }
+        .special-box h3 { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:8px; }
+        .special-box p  { color:var(--muted); font-size:14px; }
+
+        .back-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 28px; background:var(--dark); color:#fff; text-decoration:none; border-radius:12px; font-weight:700; transition:.3s; }
+        .back-btn:hover { background:var(--gold); transform:translateY(-2px); }
+
+        @media(max-width:600px) { .timeline { padding-left:55px; } .timeline::before { left:20px; } .step-icon { left:-55px; width:42px; height:42px; font-size:1rem; } .delivery-banner { flex-direction:column; } }
+    </style>
+</head>
+<body>
+
+<nav class="header-nav">
+    <a href="/"><img src="/static/logo.jpeg" class="nav-logo-img" alt="Logo"></a>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/product/" style="color:var(--gold)">Products</a>
+        <a href="/product/my-orders/" style="color:var(--gold)">My Orders</a>
+        <a href="/product/cart/"><i class="fa-solid fa-cart-shopping"></i></a>
+        <a href="/logout/" class="logout-btn">Logout</a>
+    </div>
+</nav>
+
+<div class="page-header">
+    <span>Live Tracking</span>
+    <h1>Track Order #{{ order.id }}</h1>
+</div>
+
+<div class="track-wrapper">
+
+    <!-- Order Info -->
+    <div class="info-card">
+        <div class="info-group">
+            <label>Order ID</label>
+            <p>#{{ order.id }}</p>
+        </div>
+        <div class="info-group">
+            <label>Ordered On</label>
+            <p>{{ order.created_at|date:"d M Y" }}</p>
+        </div>
+        <div class="info-group">
+            <label>Deliver To</label>
+            <p>{{ order.city }}, {{ order.pincode }}</p>
+        </div>
+        <div class="info-group">
+            <label>Payment</label>
+            <p>{{ order.get_payment_mode_display }}</p>
+        </div>
+        <div class="info-group">
+            <label>Status</label>
+            <span class="status-pill s-{{ order.status }}">{{ order.get_status_display }}</span>
+        </div>
+    </div>
+
+    {% if order.status not in 'CANCELLED,RETURNED' %}
+    <!-- Delivery Countdown Banner -->
+    {% if order.scheduled_delivery_date %}
+    <div class="delivery-banner">
+        <div>
+            <div class="db-label">Expected Delivery</div>
+            <div class="db-date">
+                <i class="fas fa-calendar-check" style="color:var(--gold);margin-right:8px;"></i>
+                {{ order.scheduled_delivery_date|date:"l, d F Y" }}
+            </div>
+            {% if order.status == 'DELIVERED' %}
+            <div style="margin-top:6px;font-size:13px;color:#86efac;"><i class="fas fa-check-circle"></i> Delivered on {{ order.delivered_at|date:"d M Y, h:i A" }}</div>
+            {% endif %}
+        </div>
+        {% if order.status != 'DELIVERED' %}
+        <div class="countdown-boxes" id="countdown-wrap">
+            <div class="cbox"><div class="num" id="cd-days">—</div><div class="lbl">Days</div></div>
+            <div class="cbox"><div class="num" id="cd-hours">—</div><div class="lbl">Hrs</div></div>
+            <div class="cbox"><div class="num" id="cd-mins">—</div><div class="lbl">Min</div></div>
+        </div>
+        {% else %}
+        <div style="font-size:2rem;">🎉</div>
+        {% endif %}
+    </div>
+    {% elif order.status == 'PROCESSING' %}
+    <div class="delivery-banner">
+        <div>
+            <div class="db-label">Delivery Timeline</div>
+            <div class="db-date"><i class="fas fa-clock" style="color:var(--gold);margin-right:8px;"></i>Awaiting Admin Confirmation</div>
+            <div style="margin-top:6px;font-size:13px;opacity:.7;">Delivery will be scheduled within 7 days once confirmed.</div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <!-- Timeline -->
+    <div class="timeline-card">
+        <div class="timeline-title">
+            <i class="fas fa-route" style="color:var(--gold);margin-right:10px;"></i>Order Journey
+        </div>
+
+        {% if order.status == 'CANCELLED' %}
+        <div class="special-box">
+            <i class="fas fa-times-circle" style="color:var(--red);"></i>
+            <h3>Order Cancelled</h3>
+            <p>{% if order.cancellations.first %}Reason: {{ order.cancellations.first.reason }}{% else %}This order was cancelled.{% endif %}</p>
+        </div>
+
+        {% elif order.status == 'RETURNED' %}
+        <div class="special-box">
+            <i class="fas fa-undo" style="color:var(--gold);"></i>
+            <h3>Return Requested</h3>
+            <p>{% if order.returns.first %}Reason: {{ order.returns.first.reason }}{% else %}Return request submitted.{% endif %}</p>
+        </div>
+
+        {% else %}
+        <div class="timeline">
+            {% for s in step_info %}
+            <div class="timeline-step">
+                <!-- Icon -->
+                <div class="step-icon {% if s.done %}done{% elif s.active %}active{% else %}future{% endif %}">
+                    {% if s.key == 'PROCESSING' %}<i class="fas fa-receipt"></i>
+                    {% elif s.key == 'CONFIRMED' %}<i class="fas fa-check"></i>
+                    {% elif s.key == 'SHIPPED' %}<i class="fas fa-shipping-fast"></i>
+                    {% elif s.key == 'OUT_FOR_DELIVERY' %}<i class="fas fa-truck"></i>
+                    {% elif s.key == 'DELIVERED' %}<i class="fas fa-box-open"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Content -->
+                <div class="step-body">
+                    <div class="step-name {% if s.done %}done{% elif s.active %}active{% else %}future{% endif %}">
+                        {% if s.key == 'PROCESSING' %}Order Placed
+                        {% elif s.key == 'CONFIRMED' %}Order Confirmed
+                        {% elif s.key == 'SHIPPED' %}Shipped
+                        {% elif s.key == 'OUT_FOR_DELIVERY' %}Out for Delivery
+                        {% elif s.key == 'DELIVERED' %}Delivered
+                        {% endif %}
+                        {% if s.active %}&nbsp;<span style="font-size:12px;background:rgba(179,139,77,.15);color:var(--gold);padding:2px 8px;border-radius:10px;">Current</span>{% endif %}
+                    </div>
+
+                    <div class="step-desc {% if s.future %}future{% endif %}">
+                        {% if s.key == 'PROCESSING' %}We received your order and it is being reviewed.
+                        {% elif s.key == 'CONFIRMED' %}Order confirmed and being packed by our team.
+                        {% elif s.key == 'SHIPPED' %}Your order left our warehouse and is on its way.
+                        {% elif s.key == 'OUT_FOR_DELIVERY' %}Our delivery partner is heading to your address.
+                        {% elif s.key == 'DELIVERED' %}Your order was delivered successfully. Enjoy!
+                        {% endif %}
+                    </div>
+
+                    <!-- Time chips -->
+                    <div class="step-time-chips">
+                        {% if s.timestamp %}
+                            <!-- Actual time -->
+                            <span class="time-chip chip-done">
+                                <i class="fas fa-check-circle"></i>
+                                {{ s.timestamp|date:"d M Y, h:i A" }}
+                            </span>
+                        {% elif s.active and not s.timestamp %}
+                            <span class="time-chip chip-active">
+                                <i class="fas fa-circle-notch fa-spin"></i> In Progress
+                            </span>
+                        {% endif %}
+
+                        {% if s.scheduled and not s.timestamp %}
+                            <!-- Scheduled future time -->
+                            <span class="time-chip chip-scheduled">
+                                <i class="fas fa-calendar-alt"></i>
+                                Expected: {{ s.scheduled|date:"d M Y, h:i A" }}
+                            </span>
+                        {% elif s.scheduled and s.timestamp %}
+                            <!-- Show scheduled too for reference -->
+                            <span class="time-chip chip-future" style="opacity:.5;">
+                                <i class="fas fa-calendar-check"></i>
+                                Scheduled: {{ s.scheduled|date:"d M Y" }}
+                            </span>
+                        {% endif %}
+
+                        {% if s.future and not s.scheduled %}
+                            <span class="time-chip chip-future">
+                                <i class="fas fa-clock"></i> Pending
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <a href="/product/my-orders/" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to My Orders
+    </a>
+</div>
+
+<script>
+    // ── Countdown to delivery date ──────────────────────────────
+    {% if order.scheduled_delivery_date and order.status != 'DELIVERED' %}
+    const deliveryDate = new Date("{{ order.scheduled_delivery_date|date:'Y-m-d H:i:s' }}".replace(' ', 'T') + "+05:30");
+
+    function updateCountdown() {
+        const now  = new Date();
+        const diff = deliveryDate - now;
+        if (diff <= 0) {
+            document.getElementById('cd-days').textContent  = '0';
+            document.getElementById('cd-hours').textContent = '0';
+            document.getElementById('cd-mins').textContent  = '0';
+            return;
+        }
+        const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        document.getElementById('cd-days').textContent  = days;
+        document.getElementById('cd-hours').textContent = hours;
+        document.getElementById('cd-mins').textContent  = mins;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 60000);
+
+    // Auto-refresh page every 30 minutes so status updates if time has passed
+    setTimeout(() => location.reload(), 30 * 60 * 1000);
+    {% endif %}
+</script>
+</body>
+</html>

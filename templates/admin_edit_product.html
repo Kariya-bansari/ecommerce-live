@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Product — dhara enterprise</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{--acc:#6366f1;--acc2:#06b6d4;--ok:#10b981;--err:#ef4444;--bg:#f1f5f9;--card:#fff;--bdr:#e2e8f0;--txt:#0f172a;--sub:#64748b;--rad:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;}
+.wrap{width:100%;max-width:780px;}
+.topbar{display:flex;align-items:center;gap:14px;margin-bottom:26px;}
+.back-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:var(--card);border:1.5px solid var(--bdr);border-radius:9px;font-size:.83rem;font-weight:600;color:var(--sub);text-decoration:none;transition:all .14s;}
+.back-btn:hover{background:var(--bdr);color:var(--txt);}
+.page-h{font-family:'Space Grotesk',sans-serif;font-size:1.35rem;font-weight:700;}
+.page-h span{color:var(--acc);}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--rad);padding:30px;}
+.card-hd{display:flex;align-items:center;gap:10px;margin-bottom:26px;padding-bottom:18px;border-bottom:1px solid var(--bdr);}
+.card-ico{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;}
+.card-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;}
+.card-sub{font-size:.75rem;color:var(--sub);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.form-grid .full{grid-column:1/-1;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg label{font-size:.77rem;font-weight:700;color:var(--sub);letter-spacing:.04em;text-transform:uppercase;}
+.fg input,.fg select{padding:11px 14px;border:1.5px solid var(--bdr);border-radius:9px;font-size:.87rem;font-family:'DM Sans',sans-serif;outline:none;background:#f8fafc;color:var(--txt);transition:border-color .14s,background .14s;}
+.fg input:focus,.fg select:focus{border-color:var(--acc);background:#fff;}
+.img-preview-wrap{margin-top:6px;}
+.img-preview{width:80px;height:80px;border-radius:10px;object-fit:cover;border:2px solid var(--bdr);display:block;margin-bottom:8px;}
+.img-placeholder{width:80px;height:80px;border-radius:10px;background:#f1f5f9;border:2px dashed var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:1.5rem;margin-bottom:8px;}
+.file-input-label{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;background:#eef2ff;color:var(--acc);border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;transition:background .14s;}
+.file-input-label:hover{background:#e0e7ff;}
+.file-input{display:none;}
+.calc-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:14px 16px;margin-top:6px;}
+.calc-row{display:flex;justify-content:space-between;align-items:center;font-size:.83rem;}
+.calc-label{color:var(--sub);}
+.calc-val{font-weight:700;color:#166534;font-family:'Space Grotesk',sans-serif;font-size:1rem;}
+.divider{border:none;border-top:1px solid var(--bdr);margin:22px 0;}
+.form-actions{display:flex;gap:12px;justify-content:flex-end;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:9px;font-size:.87rem;font-weight:700;border:none;cursor:pointer;transition:all .15s;text-decoration:none;font-family:'DM Sans',sans-serif;}
+.btn-primary{background:linear-gradient(135deg,var(--acc),#4f46e5);color:#fff;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.35);}
+.btn-sec{background:var(--bg);color:var(--txt);border:1.5px solid var(--bdr);}
+.btn-sec:hover{background:var(--bdr);}
+.alert{padding:12px 16px;border-radius:9px;margin-bottom:18px;font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:9px;}
+.alert-success{background:#ecfdf5;color:#065f46;border-left:3px solid var(--ok);}
+.alert-error{background:#fef2f2;color:#991b1b;border-left:3px solid var(--err);}
+.stock-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;margin-top:6px;}
+.s-ok{background:#dcfce7;color:#166534;}
+.s-warn{background:#fef3c7;color:#92400e;}
+.s-err{background:#fee2e2;color:#991b1b;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}.form-grid .full{grid-column:1;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a href="{% url 'dashboard' %}" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+    <div>
+      <p style="font-size:.72rem;color:var(--sub);">Editing Product #{{ product.id }}</p>
+      <h1 class="page-h">Edit <span>Product</span></h1>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert {% if 'success' in msg.tags %}alert-success{% else %}alert-error{% endif %}">
+        <i class="fa-solid {% if 'success' in msg.tags %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico"><i class="fa-solid fa-pen-to-square"></i></div>
+      <div>
+        <div class="card-title">{{ product.Product_Name }}</div>
+        <div class="card-sub">{{ product.Category }} &nbsp;·&nbsp; {{ product.Brand }}
+          &nbsp;·&nbsp;
+          {% if product.Quantity <= 2 %}
+            <span class="stock-badge s-err"><i class="fa-solid fa-triangle-exclamation"></i> Critical: {{ product.Quantity }} left</span>
+          {% elif product.Quantity <= 5 %}
+            <span class="stock-badge s-warn">⚠ Low Stock: {{ product.Quantity }} left</span>
+          {% else %}
+            <span class="stock-badge s-ok"><i class="fa-solid fa-check"></i> In Stock: {{ product.Quantity }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-grid">
+
+        <div class="fg full">
+          <label>Product Name</label>
+          <input type="text" name="Product_Name" value="{{ product.Product_Name }}" required placeholder="e.g. Samsung Galaxy S24">
+        </div>
+
+        <div class="fg">
+          <label>Category</label>
+          <input type="text" name="Category" value="{{ product.Category }}" required placeholder="e.g. Mobiles">
+        </div>
+
+        <div class="fg">
+          <label>Brand</label>
+          <input type="text" name="Brand" value="{{ product.Brand }}" required placeholder="e.g. Samsung">
+        </div>
+
+        <div class="fg">
+          <label>Model / Type</label>
+          <input type="text" name="Model_Type" value="{{ product.Model_Type }}" required placeholder="e.g. SM-S921B">
+        </div>
+
+        <div class="fg">
+          <label>Stock Quantity</label>
+          <input type="number" name="Quantity" value="{{ product.Quantity }}" required min="0" placeholder="0" id="qty">
+        </div>
+
+        <div class="fg">
+          <label>Unit Price (₹)</label>
+          <input type="number" name="Unit_Price" value="{{ product.Unit_Price }}" required min="0" step="0.01" placeholder="0.00" id="unit_price" oninput="calcTotal()">
+        </div>
+
+        <div class="fg">
+          <label>GST %</label>
+          <input type="number" name="Gst_Percent" value="{{ product.Gst_Percent }}" min="0" max="100" step="0.01" placeholder="18" id="gst" oninput="calcTotal()">
+        </div>
+
+        <div class="fg">
+          <label>Calculated Total Price</label>
+          <div class="calc-box">
+            <div class="calc-row">
+              <span class="calc-label">Unit + GST =</span>
+              <span class="calc-val" id="total_display">₹{{ product.Total_Price }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fg full">
+          <label>Product Image</label>
+          <div class="img-preview-wrap">
+            {% if product.ProductImage %}
+              <img src="{{ product.ProductImage.url }}" class="img-preview" id="imgPreview">
+            {% else %}
+              <div class="img-placeholder" id="imgPlaceholder"><i class="fa-solid fa-image"></i></div>
+              <img src="" class="img-preview" id="imgPreview" style="display:none;">
+            {% endif %}
+            <label class="file-input-label" for="imgInput">
+              <i class="fa-solid fa-upload"></i> Change Image
+            </label>
+            <input type="file" name="ProductImage" id="imgInput" class="file-input" accept="image/*" onchange="previewImg(this)">
+            <p style="font-size:.72rem;color:var(--sub);margin-top:5px;">Leave empty to keep current image. Accepts JPG, PNG, WEBP.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="divider">
+
+      <div class="form-actions">
+        <a href="{% url 'dashboard' %}" class="btn btn-sec"><i class="fa-solid fa-xmark"></i> Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function calcTotal(){
+  const price = parseFloat(document.getElementById('unit_price').value) || 0;
+  const gst   = parseFloat(document.getElementById('gst').value) || 0;
+  const total = price + (price * gst / 100);
+  document.getElementById('total_display').textContent = '₹' + total.toFixed(2);
+}
+
+function previewImg(input){
+  if(input.files && input.files[0]){
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('imgPreview');
+      const ph  = document.getElementById('imgPlaceholder');
+      img.src = e.target.result;
+      img.style.display = 'block';
+      if(ph) ph.style.display = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Init calc on load
+calcTotal();
+</script>
+</body>
+</html>

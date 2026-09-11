@@ -3,6 +3,8 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.db.models import Sum, Count
 from .models import Product
+from store.models import Order, OrderItem, Cart, Wishlist
+from django.contrib.auth.models import User
 import json
 
 
@@ -39,11 +41,18 @@ def dashboard(request):
         "total_revenue": total_revenue,
         "low_stock": low_stock,
         "low_stock_count": low_stock.count(),
-        # Chart data – passed as JSON strings so JS can parse safely
+        # Chart data — passed as JSON strings so JS can parse safely
         "cat_labels": json.dumps(cat_labels),
         "cat_counts": json.dumps(cat_counts),
         "bar_labels": json.dumps(bar_labels),
         "bar_prices": json.dumps(bar_prices),
+        # Live data from user orders
+        "all_orders": Order.objects.all().order_by('-created_at'),
+        "all_users": User.objects.filter(is_staff=False).order_by('-date_joined'),
+        "cart_items": Cart.objects.all().select_related('user'),
+        "wishlist_items": Wishlist.objects.all().select_related('user'),
+        "total_orders": Order.objects.count(),
+        "total_users": User.objects.filter(is_staff=False).count(),
     })
 
 

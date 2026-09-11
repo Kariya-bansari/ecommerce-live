@@ -63,10 +63,14 @@ def login_view(request):
         # Support login by email too
         if "@" in username:
             try:
-                user_obj = User.objects.get(email=username)
-                username = user_obj.username
-            except User.DoesNotExist:
-                error = "No account found with that email."
+                user_obj = User.objects.filter(email__iexact=username).first()
+                if user_obj:
+                    username = user_obj.username
+                else:
+                    error = "No account found with that email."
+                    return render(request, "login.html", {"error": error})
+            except Exception:
+                error = "Error checking email."
                 return render(request, "login.html", {"error": error})
 
         # Django's authenticate checks hashed password
